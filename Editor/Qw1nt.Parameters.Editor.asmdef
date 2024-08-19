@@ -1,0 +1,16 @@
+{
+    "name": "Qw1nt.Parameters.Editor",
+    "rootNamespace": "",
+    "references": ["GUID:65a10ae233ca90a488a4bc91861b7065"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

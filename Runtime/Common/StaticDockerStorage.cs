@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Scellecs.Collections;
+
+namespace Parameters.Runtime.Common
+{
+    internal static class StaticDockerStorage
+    {
+        // private static readonly Dictionary<int, FastList<ParameterDocker>> Storage = new(2);
+        internal static readonly Dictionary<int, FastList<ParameterDocker>> Map = new();
+        internal static readonly FastList<ParameterDocker> Dockers = new();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void Add(ParameterDocker docker)
+        {
+            if (docker.Holder == null)
+                return;
+
+            Dockers.Add(docker);
+            var holderId = docker.Holder.GetInstanceID();
+
+            if (Map.ContainsKey(holderId) == false)
+                Map.Add(docker.Holder.GetInstanceID(), new FastList<ParameterDocker>(2));
+            
+            Map[holderId].Add(docker);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void Remove(ParameterDocker docker)
+        {
+#if UNITY_EDITOR
+            if (docker.Holder == null)
+                throw new NullReferenceException();
+#endif
+
+            Dockers.Remove(docker);
+            Map.Remove(docker.Holder.GetInstanceID());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static FastList<ParameterDocker> Get(int id)
+        {
+            return Map[id];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ParameterDocker GetSingle(int id)
+        {
+            return Map[id].data[0];
+        }
+    }
+}

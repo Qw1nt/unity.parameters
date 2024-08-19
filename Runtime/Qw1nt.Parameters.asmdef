@@ -1,0 +1,17 @@
+{
+    "name": "Qw1nt.Parameters",
+    "rootNamespace": "",
+    "references": [
+        "GUID:699dbb8c0a364abea1d15293ada3bcaa",
+        "GUID:e8e0c803a4e624f59b70e545ceb518a1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
