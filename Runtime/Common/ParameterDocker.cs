@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Parameters.Runtime.Base;
 using Parameters.Runtime.Interfaces;
@@ -6,23 +7,22 @@ using Scellecs.Collections;
 
 namespace Parameters.Runtime.Common
 {
-    public class ParameterDocker
+    public class ParameterDocker : IDisposable
     {
         public readonly IDockerHolder Holder;
         public readonly ParameterDocker Parent;
 
-        // ID крейта -> зависимые параметры
-        // private readonly Dictionary<ulong, FastList<ulong>> _cratesDependencies = new(16);
         private readonly Dictionary<ulong, ParameterCrateDescriptionBase> _crates = new(8);
         private readonly Queue<ParameterDocker> _childQueue = new(4);
         private readonly FastList<ParameterDocker> _childBuffer = new(4);
-        
+
         internal readonly FastList<ParameterCrateDescriptionBase> Crates;
         internal readonly FastList<ulong> CalculationBuffer = new();
-        
+
         public readonly FastList<ParameterDocker> Children = new();
-        
-        public ParameterDocker(IDockerHolder holder, IReadOnlyList<IParameterCrateFactory> cratesData, ParameterDocker parent = null)
+
+        public ParameterDocker(IDockerHolder holder, IReadOnlyList<IParameterCrateFactory> cratesData,
+            ParameterDocker parent = null)
         {
             Holder = holder;
             Parent = parent;
@@ -41,12 +41,12 @@ namespace Parameters.Runtime.Common
                 description.HasChanges = true;
             }
 
-            if(Holder != null)
+            if (Holder != null)
                 StaticDockerStorage.Add(this);
-            
-            if(Parent == null)
+
+            if (Parent == null)
                 return;
-            
+
             Parent.AddChild(this);
 
             foreach (var crate in Crates)
@@ -58,10 +58,10 @@ namespace Parameters.Runtime.Common
         {
             _childQueue.Clear();
             _childQueue.Enqueue(child);
-            
+
             while (_childQueue.Count > 0)
             {
-                var element = _childQueue.Dequeue(); 
+                var element = _childQueue.Dequeue();
                 _childBuffer.Add(element);
 
                 foreach (var elementChild in element.Children)
@@ -71,41 +71,27 @@ namespace Parameters.Runtime.Common
             AddChild(_childBuffer);
             _childBuffer.Clear();
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddChild(FastList<ParameterDocker> children)
         {
             Children.AddListRange(children);
             Parent?.AddChild(children);
         }
-        
-        /*[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Calculate(ulong crateId)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void RemoveChild(ParameterDocker child)
         {
-            if(_crates.ContainsKey(crateId) == false)
-                return;
+            var children = child.Children;
+            Children.RemoveSwap(child, out _);
             
-            var crate = _crates[crateId];
-            var cleanValue = 0f;
+            var length = children.length;
 
-            foreach (var parameter in crate.Refs)
-                cleanValue += parameter.GetValue();
+            for (int i = 0; i < length; i++)
+                Children.RemoveSwap(children.data[i], out _);
             
-            crate.CleanValue = cleanValue;
-            crate.ParentModifiedValue = cleanValue;
-
-            if (Parent?.TryGetCrate(crateId, out var parentCrate) == true)
-                crate.ParentModifiedValue += parentCrate.GetValue();
-            
-            foreach (var child in _children)
-            {
-                if (child.TryGetCrate(crateId, out var result) == false)
-                    continue;
-                
-                var description = (ParameterCrateDescriptionBase)result;
-                description.ParentModifiedValue = crate.CleanValue + description.CleanValue;
-            }
-        }*/
+            Parent?.RemoveChild(child);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasCrate(ulong id)
@@ -146,38 +132,10 @@ namespace Parameters.Runtime.Common
             return null;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IParameterCrate GetCrateByParameter(IParameterRef parameterRef)
+        public void Dispose()
         {
-            foreach (var pair in _crates)
-            {
-                var crate = pair.Value;
-
-                if (crate.IsParameterBelongs(parameterRef) == false)
-                    continue;
-
-                return crate;
-            }
-
-            return null;
+            Parent?.RemoveChild(this);
+            StaticDockerStorage.Remove(this);
         }
-
-        /*[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ApplyCrates(IReadOnlyList<IParameterCrateFactory> crates, ref double value)
-        {
-            if (crates == null)
-                return;
-
-            foreach (var crateData in crates)
-            {
-#if UNITY_EDITOR
-                if (_crates.ContainsKey(crateData.Id) == false)
-                    throw new KeyNotFoundException();
-#endif
-
-                var crate = _crates[crateData.Id];
-                // crate.Apply(ref value);
-            }
-        }*/
     }
 }

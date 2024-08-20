@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Parameters.Runtime.Base;
+﻿using System.Runtime.CompilerServices;
+using Parameters.Runtime.Common;
+using Parameters.Runtime.Interfaces;
 
 namespace Parameters.Runtime.Extensions
 {
@@ -11,5 +12,19 @@ namespace Parameters.Runtime.Extensions
             return await crateData.Measurement.GetLocalizedStringAsync(arguments);
         }
 #endif
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IParameterCrate GetCrateByParameter(this ParameterDocker docker, IParameterRef parameterRef)
+        {
+            foreach (var crate in docker.Crates)
+            {
+                if (crate.IsParameterBelongs(parameterRef) == false)
+                    continue;
+
+                return crate;
+            }
+
+            return null;
+        }
     }
 }

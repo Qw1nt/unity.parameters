@@ -7,7 +7,6 @@ namespace Parameters.Runtime.Common
 {
     internal static class StaticDockerStorage
     {
-        // private static readonly Dictionary<int, FastList<ParameterDocker>> Storage = new(2);
         internal static readonly Dictionary<int, FastList<ParameterDocker>> Map = new();
         internal static readonly FastList<ParameterDocker> Dockers = new();
 
@@ -35,7 +34,7 @@ namespace Parameters.Runtime.Common
 #endif
 
             Dockers.Remove(docker);
-            Map.Remove(docker.Holder.GetInstanceID());
+            Map[docker.Holder.GetInstanceID()].Remove(docker);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
