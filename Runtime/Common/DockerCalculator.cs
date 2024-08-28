@@ -48,7 +48,10 @@ namespace Parameters.Runtime.Common
 
             description.ParentModifiedValue = description.CleanValue;
             
-            if (docker.Parent?.TryGetCrate(description.Id, out var parentCrate, true) == true)
+            if(docker.Parent == null)
+                return;
+            
+            if (docker.Parent.TryGetCrate(description.Id, out var parentCrate, true) == true)
                 description.ParentModifiedValue += parentCrate.GetValue();
         }
     }
