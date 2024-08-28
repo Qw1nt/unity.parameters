@@ -28,6 +28,8 @@
 .idea/
 Assets/3rdParty/
 
+!SourceGenerator~/
+
 # Gradle cache directory
 .gradle/
 
