@@ -27,9 +27,9 @@
 .vs/
 .idea/
 Assets/3rdParty/
-Parameters/SourceGenerator~/bin
-Parameters/SourceGenerator~/obj
-Parameters/SourceGenerator~/.idea/
+SourceGenerator~/Parameters/bin
+SourceGenerator~/Parameters/obj
+SourceGenerator~/Parameters/.idea/
 
 SourceGenerator~/
 
