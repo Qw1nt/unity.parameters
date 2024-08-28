@@ -20,14 +20,14 @@ namespace Parameters.Runtime.Common
             {
                 if(docker.CalculationBuffer.length == 0)
                     continue;
-
+                
                 foreach (var crateId in docker.CalculationBuffer)
                 {
                     Calculate(docker, (ParameterCrateDescriptionBase)docker.GetCrate(crateId));
 
                     foreach (var child in docker.Children)
                     {
-                        if(child.TryGetCrate(crateId, out var childCrate) == false)
+                        if(child.TryGetCrate(crateId, out var childCrate, true) == false)
                             continue;
 
                         Calculate(child, (ParameterCrateDescriptionBase)childCrate);
@@ -48,7 +48,7 @@ namespace Parameters.Runtime.Common
 
             description.ParentModifiedValue = description.CleanValue;
             
-            if (docker.Parent?.TryGetCrate(description.Id, out var parentCrate) == true)
+            if (docker.Parent?.TryGetCrate(description.Id, out var parentCrate, true) == true)
                 description.ParentModifiedValue += parentCrate.GetValue();
         }
     }

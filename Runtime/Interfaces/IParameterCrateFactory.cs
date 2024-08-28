@@ -6,8 +6,6 @@ namespace Parameters.Runtime.Interfaces
     {
         ulong Id { get; }
         
-        // IReadOnlyList<IParameterFactory> InfluentialCrates { get; }
-        
         IParameterCrate CreateCrate(ParameterDocker docker);
     }
 }

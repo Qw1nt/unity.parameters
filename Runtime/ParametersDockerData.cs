@@ -6,6 +6,10 @@ using Parameters.Runtime.Interfaces;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+#if PARAMETERS_TRI_INSPECTOR
+using TriInspector;
+#endif
+
 namespace Parameters.Runtime
 {
     [CreateAssetMenu(menuName = "Parameters/DockerData")]
@@ -35,7 +39,7 @@ namespace Parameters.Runtime
 
             public ulong Id => _crate.Id;
 
-            public IReadOnlyList<IParameterCrateFactory> InfluentialCrates => null;
+            public float DefaultValue => _defaultValue;
 
             public IParameterCrate CreateCrate(ParameterDocker docker)
             {

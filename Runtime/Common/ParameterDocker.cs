@@ -50,7 +50,7 @@ namespace Parameters.Runtime.Common
             Parent.AddChild(this);
 
             foreach (var crate in Crates)
-                Parent.CalculationBuffer.Add(crate.Id);
+                CalculationBuffer.Add(crate.Id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -100,7 +100,7 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetCrate(ulong id, out IParameterCrate result)
+        public bool TryGetCrate(ulong id, out IParameterCrate result, bool onlyInSelf = false)
         {
             result = null;
 
@@ -110,6 +110,9 @@ namespace Parameters.Runtime.Common
                 return true;
             }
 
+            if (onlyInSelf == true)
+                return false;
+            
             if (Parent == null || Parent.HasCrate(id) == false)
                 return false;
 
@@ -136,6 +139,12 @@ namespace Parameters.Runtime.Common
         {
             Parent?.RemoveChild(this);
             StaticDockerStorage.Remove(this);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ParameterDocker GetPlayerDocker()
+        {
+            return StaticDockerStorage.PlayerDocker;
         }
     }
 }

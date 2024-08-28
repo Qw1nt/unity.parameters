@@ -9,7 +9,8 @@ namespace Parameters.Runtime.Common
     {
         internal static readonly Dictionary<int, FastList<ParameterDocker>> Map = new();
         internal static readonly FastList<ParameterDocker> Dockers = new();
-
+        internal static ParameterDocker PlayerDocker;
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Add(ParameterDocker docker)
         {
@@ -24,7 +25,7 @@ namespace Parameters.Runtime.Common
             
             Map[holderId].Add(docker);
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Remove(ParameterDocker docker)
         {
@@ -47,6 +48,16 @@ namespace Parameters.Runtime.Common
         internal static ParameterDocker GetSingle(int id)
         {
             return Map[id].data[0];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ParameterDocker SafeGetFirst(int id)
+        {
+            if (Map.ContainsKey(id) == false)
+                return null;
+
+            var list = Map[id];
+            return list.data[0];
         }
     }
 }
