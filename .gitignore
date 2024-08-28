@@ -27,9 +27,11 @@
 .vs/
 .idea/
 Assets/3rdParty/
-Parameters/obj/
+Parameters/SourceGenerator~/bin
+Parameters/SourceGenerator~/obj
+Parameters/SourceGenerator~/.idea/
 
-!SourceGenerator~/
+SourceGenerator~/
 
 # Gradle cache directory
 .gradle/
