@@ -27,6 +27,7 @@
 .vs/
 .idea/
 Assets/3rdParty/
+Parameters/obj/
 
 !SourceGenerator~/
 
