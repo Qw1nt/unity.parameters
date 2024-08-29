@@ -7,16 +7,10 @@ namespace Parameters.Runtime.Common
     public class ParameterInitializer
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Initialize(IReadOnlyList<IParameterFactory> factories, IReadOnlyList<IComplexCalculationFormula> formulas)
+        public static void Initialize(IReadOnlyList<IParameterStaticIdSetter> setters)
         {
-            var docker = new ParameterDocker(null, factories);
-            
-            foreach (var factory in factories)
-            {
-                var baseParameter = factory.CreateParameter(docker);
-                var parameter = baseParameter.CreateInstance();
-                parameter.SetStaticId(factory.Id);
-            }
+            foreach (var setter in setters)
+                setter.SetStaticId(setter.Id);
         }
     }
 }

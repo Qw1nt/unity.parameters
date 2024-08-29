@@ -1,7 +1,5 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Parameters.Runtime.Interfaces;
-using Qw1nt.SelfIds.Runtime;
 using Scellecs.Collections;
 
 namespace Parameters.Runtime.Common
@@ -25,24 +23,6 @@ namespace Parameters.Runtime.Common
         {
             Id = id;
             Docker = docker;
-        }
-
-        public virtual void SetStaticId(ulong id)
-        {
-        }
-
-        public virtual Parameter CreateInstance(float rawValue = 0f, float rawOverallValue = 1f)
-        {
-#if UNITY_EDITOR
-            throw new Exception();
-#endif
-
-            return null;
-        }
-
-        public virtual Parameter CreateInstance(Id id, CrateType type, ParameterDocker docker)
-        {
-            return null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -70,9 +50,9 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(float rawValue)
+        public void Add(ParameterRawValue rawValue)
         {
-            Value.CleanValue += rawValue;
+            Values.Add(rawValue);
             Docker.CalculationBuffer.Add(Id);
         }
 
@@ -91,16 +71,9 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Subtract(float rawValue)
+        public void AddOverall(ParameterRawValue rawValue)
         {
-            Value.CleanValue -= rawValue;
-            Docker.CalculationBuffer.Add(Id);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddOverall(float rawValue)
-        {
-            Overall.CleanValue += rawValue;
+            Overalls.Add(rawValue);
             Docker.CalculationBuffer.Add(Id);
         }
 
@@ -115,13 +88,6 @@ namespace Parameters.Runtime.Common
                 Docker.CalculationBuffer.Add(Id);
                 break;
             }
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SubtractOverall(float rawValue)
-        {
-            Overall.CleanValue -= rawValue;
-            Docker.CalculationBuffer.Add(Id);
         }
 
         public void SaveChanges()

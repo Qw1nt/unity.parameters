@@ -3,7 +3,7 @@
 namespace Parameters.Runtime.Types
 {
     [Parameter(typeof(int))]
-    public partial class Penetration
+    public partial struct Penetration
     {
     }
 }

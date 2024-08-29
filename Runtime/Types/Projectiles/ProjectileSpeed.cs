@@ -3,7 +3,7 @@
 namespace Parameters.Runtime.Types.Projectiles
 {
     [Parameter(typeof(float))]
-    public partial class ProjectileSpeed 
+    public partial struct ProjectileSpeed 
     {
     }
 }

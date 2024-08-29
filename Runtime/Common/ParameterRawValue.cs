@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Parameters.Runtime.Common
 {
     [Serializable]
-    public struct ParameterRawValue : IEqualityComparer<ParameterRawValue>
+    public struct ParameterRawValue : IEquatable<ParameterRawValue>, IEqualityComparer<ParameterRawValue>
     {
         public readonly uint Hash;
         
@@ -22,12 +22,31 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool Equals(object obj)
+        {
+            return obj is ParameterRawValue other && Equals(other);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(ParameterRawValue other)
+        {
+            return Hash == other.Hash;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ParameterRawValue x, ParameterRawValue y)
         {
             return x.Hash == y.Hash;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetHashCode(ParameterRawValue obj)
+        {
+            return (int)Hash;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int GetHashCode()
         {
             return (int)Hash;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Parameters.Runtime.Base;
+using Parameters.Runtime.Interfaces;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -33,29 +34,23 @@ namespace Parameters.Editor
                 : _selectedTypeName;
 
             if (GUILayout.Button(buttonText, EditorStyles.popup) == true)
-                BuildMenu();
+                SetReference();
 
             EditorGUILayout.EndHorizontal();
         }
 
-        private void BuildMenu()
+        private void SetReference()
         {
             var window = CreateInstance<SearchParameterTypeWindow>();
             window.SetSelectCallback(type =>
             {
-                var constructor = type.GetConstructor(
-                    BindingFlags.Instance | BindingFlags.NonPublic, 
-                    null, 
-                new Type[] {}, 
-                    null);
-                
-                var instance = constructor!.Invoke(new object[] {}); //Activator.CreateInstance(type);
+                var instance = Activator.CreateInstance(type);
                 _data.Data = instance;
-
+                
                 TrySetSelectedTypeName();
                 serializedObject.ApplyModifiedProperties();
 
-                EditorUtility.SetDirty(_data);
+                EditorUtility.SetDirty(target);
             });
 
             SearchWindow.Open(new SearchWindowContext(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)), window);
@@ -64,7 +59,7 @@ namespace Parameters.Editor
         private void TrySetSelectedTypeName()
         {
             if (_data.Data != null)
-                _selectedTypeName = _data.Data.GetType().Name.Split('.')[^1];
+                _selectedTypeName = _data.Data.GetType().GetDisplayName();
         }
     }
 }

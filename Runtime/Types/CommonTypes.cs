@@ -3,63 +3,63 @@
 namespace Parameters.Runtime.Types
 {
     [Parameter(typeof(float))]
-    public partial class CooldownDurationCrate
+    public partial struct CooldownDurationCrate
     {
     }
 
     [Parameter(typeof(float))]
-    public partial class CriticalChanceCrate
+    public partial struct CriticalChanceCrate
     {
     }
 
     [Parameter(typeof(float))]
-    public partial class CriticalDamageCrate
+    public partial struct CriticalDamageCrate
     {
     }
 
     [Parameter(typeof(float))]
-    public partial class ExecutionChance
+    public partial struct ExecutionChance
     {
     }
 
     [Parameter(typeof(float))]
-    public partial class ExperienceAmountMultiplierCrate
+    public partial struct ExperienceAmountMultiplierCrate
     {
     }
 
     [Parameter(typeof(int))]
-    public partial class MaxHealth
+    public partial struct MaxHealth
     {
     }
     
-    public partial class Health
+    public partial struct Health
     {
     }
 
     [Parameter(typeof(float))]
-    public partial class IncreaseMaxHealthParameterCrateDataBoost
+    public partial struct IncreaseMaxHealthParameterCrateDataBoost
     {
     }
 
     [Parameter(typeof(int))]
-    public partial class Level
+    public partial struct Level
     {
     }
     
     [Parameter(typeof(float))]
-    public partial class AttackSpeedCrate
+    public partial struct AttackSpeedCrate
     {
         
     }
     
     [Parameter(typeof(float))]
-    public partial class AttackRangeCrate
+    public partial struct AttackRangeCrate
     {
         
     }
 
     [Parameter(typeof(float))]
-    public partial class ReloadDuration
+    public partial struct ReloadDuration
     {
         
     }

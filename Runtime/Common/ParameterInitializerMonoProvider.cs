@@ -14,7 +14,7 @@ namespace Parameters.Runtime.Common
 
         private void Awake()
         {
-            ParameterInitializer.Initialize(_crates, _formulas);
+            ParameterInitializer.Initialize(_crates);
         }
 
 #if UNITY_EDITOR

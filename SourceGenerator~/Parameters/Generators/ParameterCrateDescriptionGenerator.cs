@@ -27,7 +27,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
     }
 
     private void Execute(SourceProductionContext context,
-        ImmutableArray<ItemToGeneration<ClassDeclarationSyntax>> source)
+        ImmutableArray<ItemToGeneration<StructDeclarationSyntax>> source)
     {
         const string baseClassName = "Parameter";
 
@@ -52,6 +52,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
 
             var text = $$"""
                          using Qw1nt.SelfIds.Runtime;
+                         using Parameters.Runtime.Attributes;
                          using Parameters.Runtime.Base;
                          using Parameters.Runtime.Common;
                          using Parameters.Runtime.Interfaces;
@@ -61,35 +62,42 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                          using System.Collections.Generic;
                          using System.Runtime.CompilerServices;
                          
-                         namespace {{type.ContainingNamespace}}
+                         namespace {{type.ContainingNamespace}} 
                          {
                              [Serializable]
-                             public partial class {{typeName}} : {{baseClassName}}
+                             public partial struct {{typeName}}
                              {
                                  internal static StaticId StaticId { get; set; }
-                             
-                                 internal {{typeName}}(ulong id, ParameterDocker docker) : base(id, docker)
+                                 
+                                 public readonly {{baseClassName}} Ref;
+                                 
+                                 internal {{typeName}}({{baseClassName}} parameter)
                                  {
+                                    Ref = parameter;
+                                 }
+                        
+                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                                 public {{generatedType}} GetValue()
+                                 {
+                                    return ({{generatedType}})Ref.GetRawValue();
                                  }
                                  
-                                 public override void SetStaticId(ulong id)
+                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                                 public {{generatedType}} GetCleanValue()
                                  {
-                                     StaticId = new StaticId(id);
-                                 }
-                         
-                                 public override Parameter CreateInstance(float rawValue = 0f, float rawOverallValue = 1f)
-                                 {
-                         #if UNITY_EDITOR
-                                     throw new Exception();
-                         #endif
-                         
-                                     return null;
-                                 }
-                         
-                                 public override Parameter CreateInstance(Id id, CrateType type, ParameterDocker docker)
-                                 {
-                                     return null;
-                                 }
+                                    return ({{generatedType}})Ref.GetCleanRawOverallValue();
+                                 }   
+                             }
+                             
+                             [ParameterInitSelf("{{typeName}}"), Serializable]
+                             public class {{typeName}}Initializer : IParameterStaticIdSetter
+                             {
+                                public ulong Id { get; }
+                                
+                                public void SetStaticId(ulong id)
+                                {
+                                    {{type}}.StaticId = new StaticId(id);
+                                }
                              }
                          """;
 
@@ -104,21 +112,22 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                       public static bool TryGet{{typeName}}(this ParameterDocker docker, out {{typeName}} result)
                                       {
                                           var id = {{typeName}}.StaticId.Value;
-                                          result = null;
+                                          result = default;
                                           
                                           if (docker.HasCrate(id) == false)
                                              return false;
                                           
-                                          result = ({{typeName}})docker.GetParameter(id);
+                                          result = new {{typeName}}(docker.GetParameter(id));
                                           return true;
                                       }     
                                       
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                       public static {{typeName}} Get{{typeName}}(this ParameterDocker docker)
                                       {
-                                          return ({{typeName}})docker.GetParameter({{typeName}}.StaticId.Value);
+                                          return new {{typeName}}(docker.GetParameter({{typeName}}.StaticId.Value));
                                       }     
                                       
+                                      /*
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                       public static {{typeName}}.Parameter Create{{parameterExtensionName}}(this ParameterDocker docker)
                                       {
@@ -135,7 +144,8 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                           return null;
                                       }
                                       
-                                      public static {{typeName}}.Parameter {{getParameterExtensionName}}(this FastList<IParameterRef> parameters)
+                                      
+                                      public static {{typeName}} {{getParameterExtensionName}}(this FastList<IParameterRef> parameters)
                                       {
                                           foreach (var parameter in parameters)
                                           {
@@ -145,6 +155,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                           
                                           return null;
                                       }
+                                      */
                                   }
                               """);
 
@@ -154,7 +165,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
     }
 }
 
-public class ParameterTypeGeneratorValidator : SyntaxReceiverBase<ClassDeclarationSyntax>
+public class ParameterTypeGeneratorValidator : SyntaxReceiverBase<StructDeclarationSyntax>
 {
     public ParameterTypeGeneratorValidator() : base("Parameter")
     {
