@@ -8,7 +8,7 @@ namespace Parameters.Runtime.CalculationFormulas
     [CreateAssetMenu(menuName = BaseMenuName + nameof(MovementSpeedCalculationFormula))]
     public class MovementSpeedCalculationFormula : CalculationFormulaDataBase
     {
-        [SerializeField] private ParameterCrateData _movementSpeedBoost;
+        [SerializeField] private ParameterData _movementSpeedBoost;
 
         protected override List<ulong> BuildDependencies()
         {

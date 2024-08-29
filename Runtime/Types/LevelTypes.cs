@@ -1,9 +1,8 @@
 using Parameters.Runtime.Attributes;
-using Parameters.Runtime.Common;
 
-namespace Plugins.Parameters.Runtime.Types
+namespace Parameters.Runtime.Types
 {
-    [ParameterCrateDescription(typeof(SingleIntDescriptor))]
+    [Parameter(typeof(int))]
     public partial class MapSize
     {
     

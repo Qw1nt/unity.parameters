@@ -2,7 +2,7 @@
 
 namespace Parameters.Runtime.Interfaces
 {
-    public interface IParameterCrateData
+    public interface IParameterData
     {
         ulong Id { get; }
 
@@ -14,6 +14,6 @@ namespace Parameters.Runtime.Interfaces
         
         string DebugName { get; }
         
-        public bool IsThisCrateParameter(IParameterRef parameterRef);
+        public bool IsThisCrateParameter(Parameter parameter);
     }
 }

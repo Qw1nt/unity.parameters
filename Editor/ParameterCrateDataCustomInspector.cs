@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace Parameters.Editor
 {
-    [CustomEditor(typeof(ParameterCrateData))]
+    [CustomEditor(typeof(ParameterData))]
     public class ParameterCrateDataCustomInspector : UnityEditor.Editor
     {
         private string _selectedTypeName;
-        private ParameterCrateData _crateData;
+        private ParameterData _data;
 
         private void OnEnable()
         {
-            _crateData = (ParameterCrateData)target;
+            _data = (ParameterData)target;
             TrySetSelectedTypeName();
         }
 
@@ -50,12 +50,12 @@ namespace Parameters.Editor
                     null);
                 
                 var instance = constructor!.Invoke(new object[] {}); //Activator.CreateInstance(type);
-                _crateData.Data = instance;
+                _data.Data = instance;
 
                 TrySetSelectedTypeName();
                 serializedObject.ApplyModifiedProperties();
 
-                EditorUtility.SetDirty(_crateData);
+                EditorUtility.SetDirty(_data);
             });
 
             SearchWindow.Open(new SearchWindowContext(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)), window);
@@ -63,8 +63,8 @@ namespace Parameters.Editor
 
         private void TrySetSelectedTypeName()
         {
-            if (_crateData.Data != null)
-                _selectedTypeName = _crateData.Data.GetType().Name.Split('.')[^1];
+            if (_data.Data != null)
+                _selectedTypeName = _data.Data.GetType().Name.Split('.')[^1];
         }
     }
 }

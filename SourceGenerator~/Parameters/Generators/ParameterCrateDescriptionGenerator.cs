@@ -29,7 +29,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
     private void Execute(SourceProductionContext context,
         ImmutableArray<ItemToGeneration<ClassDeclarationSyntax>> source)
     {
-        const string baseClassName = "ParameterCrateDescriptionBase";
+        const string baseClassName = "Parameter";
 
         foreach (var syntax in source)
         {
@@ -42,14 +42,16 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
             var typeName = type.Name;
             var attribute = type
                 .GetAttributes()
-                .First(x => x.ConstructorArguments.Length == 2);
+                .First(x => x.AttributeClass?.Name == "ParameterAttribute" && x.ConstructorArguments.Length == 1);
 
+            
             var generatedType = attribute.ConstructorArguments[0].Value;
 
             var parameterExtensionName = typeName.Replace("Crate", "Parameter");
             var getParameterExtensionName = "Get" + typeName.Replace("Crate", "Parameter");
 
             var text = $$"""
+                         using Qw1nt.SelfIds.Runtime;
                          using Parameters.Runtime.Base;
                          using Parameters.Runtime.Common;
                          using Parameters.Runtime.Interfaces;
@@ -64,70 +66,30 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                              [Serializable]
                              public partial class {{typeName}} : {{baseClassName}}
                              {
-                                 internal {{typeName}}()
-                                 {
-                                 }
-                                 
+                                 internal static StaticId StaticId { get; set; }
+                             
                                  internal {{typeName}}(ulong id, ParameterDocker docker) : base(id, docker)
                                  {
                                  }
                                  
-                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                                 public override IParameterRef CreateParameter()
+                                 public override void SetStaticId(ulong id)
                                  {
-                                     return new Parameter(Id);
-                                 }
-                                 
-                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]                            
-                                 public override IParameterRef CreateParameter(double defaultValue)
-                                 {
-                                     return new Parameter(Id, defaultValue);
-                                 }
-                                 
-                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                                 public override IParameterCrate CreateCrate(ulong id, CrateType type, ParameterDocker docker)
-                                 {
-                                      return new {{typeName}}(id, docker);
+                                     StaticId = new StaticId(id);
                                  }
                          
-                                 public class Parameter : ParameterBase
+                                 public override Parameter CreateInstance(float rawValue = 0f, float rawOverallValue = 1f)
                                  {
-                                    internal static StaticId Id { get; set; }
-                                 
-                                    internal double Value;
-                                    
-                                    internal Parameter()
-                                    {
-                                    }
-                                    
-                                    internal Parameter(ulong id)
-                                    {
-                                        ParameterId = id;
-                                    }
-                                    
-                                    internal Parameter(ulong id, double value)
-                                    {
-                                        ParameterId = id;
-                                        Value = value;
-                                    }
-                                    
-                                    public override ulong ParameterId { get; }
-
-                                    internal override void SetStaticId(ulong id)
-                                    {
-                                        Id = new StaticId(id);
-                                    }
+                         #if UNITY_EDITOR
+                                     throw new Exception();
+                         #endif
                          
-                                    public override float GetValue()
-                                    }
-                                    {
-                                        return (float)Value;
+                                     return null;
+                                 }
                          
-                                    public override void SetValue(double value)
-                                    {
-                                        Value = value; 
-                                    }
-                                }
+                                 public override Parameter CreateInstance(Id id, CrateType type, ParameterDocker docker)
+                                 {
+                                     return null;
+                                 }
                              }
                          """;
 
@@ -141,20 +103,20 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                       public static bool TryGet{{typeName}}(this ParameterDocker docker, out {{typeName}} result)
                                       {
-                                          var id = {{typeName}}.Parameter.Id.Value;
+                                          var id = {{typeName}}.StaticId.Value;
                                           result = null;
                                           
                                           if (docker.HasCrate(id) == false)
                                              return false;
                                           
-                                          result = ({{typeName}})docker.GetCrate(id);
+                                          result = ({{typeName}})docker.GetParameter(id);
                                           return true;
                                       }     
                                       
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                       public static {{typeName}} Get{{typeName}}(this ParameterDocker docker)
                                       {
-                                          return ({{typeName}})docker.GetCrate({{typeName}}.Parameter.Id.Value);
+                                          return ({{typeName}})docker.GetParameter({{typeName}}.StaticId.Value);
                                       }     
                                       
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -194,7 +156,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
 
 public class ParameterTypeGeneratorValidator : SyntaxReceiverBase<ClassDeclarationSyntax>
 {
-    public ParameterTypeGeneratorValidator() : base("ParameterCrateDescription")
+    public ParameterTypeGeneratorValidator() : base("Parameter")
     {
     }
 

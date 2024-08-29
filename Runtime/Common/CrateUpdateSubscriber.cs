@@ -12,7 +12,7 @@ namespace Parameters.Runtime.Common
             _storage = storage;
         }
         
-        internal abstract void Invoke(IParameterCrate crate, ParameterDocker docker);
+        internal abstract void Invoke(Parameter parameter, ParameterDocker docker);
 
         public void Dispose()
         {
@@ -22,14 +22,14 @@ namespace Parameters.Runtime.Common
     
     internal class CrateUpdateSubscriber : CrateUpdateSubscriberBase
     { 
-        private readonly Action<IParameterCrate, ParameterDocker> _callback;
+        private readonly Action<Parameter, ParameterDocker> _callback;
         
-        internal CrateUpdateSubscriber(FastList<CrateUpdateSubscriberBase> subscribers, Action<IParameterCrate, ParameterDocker> callback) : base(subscribers)
+        internal CrateUpdateSubscriber(FastList<CrateUpdateSubscriberBase> subscribers, Action<Parameter, ParameterDocker> callback) : base(subscribers)
         {
             _callback = callback;
         }
 
-        internal override void Invoke(IParameterCrate crate, ParameterDocker docker)
+        internal override void Invoke(Parameter crate, ParameterDocker docker)
         {
             _callback(crate, docker);
         }
@@ -37,16 +37,16 @@ namespace Parameters.Runtime.Common
 
     internal class CrateUpdateSubscriber<TCallbackData> : CrateUpdateSubscriberBase
     {
-        private readonly Action<IParameterCrate, ParameterDocker, TCallbackData> _callback;
+        private readonly Action<Parameter, ParameterDocker, TCallbackData> _callback;
         private readonly TCallbackData _data;
         
-        internal CrateUpdateSubscriber(FastList<CrateUpdateSubscriberBase> storage, Action<IParameterCrate, ParameterDocker, TCallbackData> callback, TCallbackData data) : base(storage)
+        internal CrateUpdateSubscriber(FastList<CrateUpdateSubscriberBase> storage, Action<Parameter, ParameterDocker, TCallbackData> callback, TCallbackData data) : base(storage)
         {
             _callback = callback;
             _data = data;
         }
         
-        internal override void Invoke(IParameterCrate crate, ParameterDocker docker)
+        internal override void Invoke(Parameter crate, ParameterDocker docker)
         {
             _callback(crate, docker, _data);
         }

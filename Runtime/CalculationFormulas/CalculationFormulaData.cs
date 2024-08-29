@@ -63,8 +63,8 @@ namespace Parameters.Runtime.CalculationFormulas
                     descriptions.Add(new FormulaElementDescription
                     {
                         Id = BuildRandomId(),
-                        Left = elementsMap[leftName].ParameterCrateData.Id,
-                        Right = elementsMap[rightName].ParameterCrateData.Id,
+                        Left = elementsMap[leftName].ParameterData.Id,
+                        Right = elementsMap[rightName].ParameterData.Id,
                         Char = parts[i]
                     });
 
@@ -81,7 +81,7 @@ namespace Parameters.Runtime.CalculationFormulas
                     {
                         Id = BuildRandomId(),
                         Left = descriptions[^1].Id,
-                        Right = elementsMap[parts[i + 1]].ParameterCrateData.Id,
+                        Right = elementsMap[parts[i + 1]].ParameterData.Id,
                         Char = parts[i]
                     });
 

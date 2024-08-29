@@ -1,34 +1,33 @@
 ﻿using Parameters.Runtime.Attributes;
-using Parameters.Runtime.Common;
 
 namespace Parameters.Runtime.Types
 {
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class CooldownDurationCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class CriticalChanceCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class CriticalDamageCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class ExecutionChance
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class ExperienceAmountMultiplierCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(int))]
     public partial class MaxHealth
     {
     }
@@ -37,29 +36,29 @@ namespace Parameters.Runtime.Types
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class IncreaseMaxHealthParameterCrateDataBoost
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleIntDescriptor))]
+    [Parameter(typeof(int))]
     public partial class Level
     {
     }
     
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class AttackSpeedCrate
     {
         
     }
     
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class AttackRangeCrate
     {
         
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
+    [Parameter(typeof(float))]
     public partial class ReloadDuration
     {
         

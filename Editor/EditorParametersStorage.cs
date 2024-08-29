@@ -11,7 +11,7 @@ namespace Parameters.Editor
         
         static EditorParametersStorage()
         {
-            var collection = TypeCache.GetTypesWithAttribute(typeof(ParameterCrateDescriptionAttribute));
+            var collection = TypeCache.GetTypesWithAttribute(typeof(ParameterAttribute));
 
             foreach (var type in collection)
                 Map.Add(type, type.Name);
