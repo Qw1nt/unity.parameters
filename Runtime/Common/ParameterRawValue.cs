@@ -18,7 +18,7 @@ namespace Parameters.Runtime.Common
             Hash = (uint)unchecked(time.Ticks * time.Millisecond);
             
             CleanValue = cleanValue;
-            ParentModifiedValue = 0f;
+            ParentModifiedValue = cleanValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -79,13 +79,13 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                  public {{generatedType}} GetValue()
                                  {
-                                    return ({{generatedType}})Ref.GetRawValue();
+                                    return ({{generatedType}})(Ref.GetRawValue() * Ref.GetRawOverallValue());
                                  }
                                  
                                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                  public {{generatedType}} GetCleanValue()
                                  {
-                                    return ({{generatedType}})Ref.GetCleanRawOverallValue();
+                                    return ({{generatedType}})Ref.GetCleanRawValue();
                                  }   
                              }
                              

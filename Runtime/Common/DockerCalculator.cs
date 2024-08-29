@@ -6,6 +6,8 @@ namespace Parameters.Runtime.Common
 {
     public class DockerCalculator : IDockerCalculator
     {
+        private const float OneHundredPercent = 1f;
+        
         private readonly FastList<ParameterDocker> _dockers;
 
         public DockerCalculator()
@@ -59,7 +61,7 @@ namespace Parameters.Runtime.Common
                 return;
 
             parameter.Value.ParentModifiedValue += parentParameter.Value.ParentModifiedValue;
-            parameter.Overall.ParentModifiedValue += parentParameter.Overall.ParentModifiedValue;
+            parameter.Overall.ParentModifiedValue += OneHundredPercent - parentParameter.Overall.ParentModifiedValue;
         }
     }
 }
