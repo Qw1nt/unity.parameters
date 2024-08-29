@@ -1,9 +1,10 @@
 ﻿using JetBrains.Annotations;
+using Parameters.Runtime.Common;
 
 namespace Parameters.Runtime.Interfaces
 {
     public interface IParameterHolder
     {
-        [CanBeNull] IParameterRef GetParameter(ulong crateId);
+        [CanBeNull] Parameter GetParameter(ulong parameterId);
     }
 }

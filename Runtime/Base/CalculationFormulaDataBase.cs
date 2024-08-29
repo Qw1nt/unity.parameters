@@ -3,12 +3,13 @@ using System.Runtime.CompilerServices;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Interfaces;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.Base
 {
     public abstract class CalculationFormulaDataBase : ScriptableObject, IComplexCalculationFormula
     {
-        [SerializeField] private ParameterCrateData _targetCrateId;
+        [FormerlySerializedAs("_targetCrateId")] [SerializeField] private ParameterData _targetId;
         // [SerializeField] private FormulaAction[] _actions;
         // [SerializeField] private List<ParameterCrateData> _dependencies;
 
@@ -18,7 +19,7 @@ namespace Parameters.Runtime.Base
         
         protected const string BaseMenuName = "Parameters/Formulas/";
         
-        public ulong CalculatedTargetId => _targetCrateId.Id;
+        public ulong CalculatedTargetId => _targetId.Id;
 
         public List<ulong> Dependencies
         {

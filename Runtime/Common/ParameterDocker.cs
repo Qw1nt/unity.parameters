@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Parameters.Runtime.Base;
 using Parameters.Runtime.Interfaces;
 using Scellecs.Collections;
 
@@ -11,34 +10,30 @@ namespace Parameters.Runtime.Common
     {
         public readonly IDockerHolder Holder;
         public readonly ParameterDocker Parent;
-
-        private readonly Dictionary<ulong, ParameterCrateDescriptionBase> _crates = new(8);
+        
+        private readonly Dictionary<ulong, Parameter> _map = new(8);
         private readonly Queue<ParameterDocker> _childQueue = new(4);
         private readonly FastList<ParameterDocker> _childBuffer = new(4);
 
-        internal readonly FastList<ParameterCrateDescriptionBase> Crates;
-        internal readonly FastList<ulong> CalculationBuffer = new();
+        internal readonly FastList<Parameter> Parameters;
+        internal readonly FastList<ulong> CalculationBuffer;
 
         public readonly FastList<ParameterDocker> Children = new();
 
-        public ParameterDocker(IDockerHolder holder, IReadOnlyList<IParameterCrateFactory> cratesData,
-            ParameterDocker parent = null)
+        public ParameterDocker(IDockerHolder holder, IReadOnlyList<IParameterFactory> parameters, ParameterDocker parent = null)
         {
             Holder = holder;
             Parent = parent;
-            Crates = new FastList<ParameterCrateDescriptionBase>(cratesData.Count);
+            Parameters = new FastList<Parameter>(parameters.Count);
+            CalculationBuffer = new FastList<ulong>(parameters.Count);
 
-            foreach (var data in cratesData)
+            foreach (var data in parameters)
             {
-                var crateInstance = data.CreateCrate(this);
-
-                if (crateInstance is ParameterCrateDescriptionBase description == false)
-                    continue;
-
-                Crates.Add(description);
-
-                _crates.Add(data.Id, description);
-                description.HasChanges = true;
+                var instance = data.CreateParameter(this);
+                
+                _map.Add(instance.Id, instance);
+                Parameters.Add(instance);
+                CalculationBuffer.Add(instance.Id);
             }
 
             if (Holder != null)
@@ -48,9 +43,6 @@ namespace Parameters.Runtime.Common
                 return;
 
             Parent.AddChild(this);
-
-            foreach (var crate in Crates)
-                CalculationBuffer.Add(crate.Id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,17 +88,17 @@ namespace Parameters.Runtime.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasCrate(ulong id)
         {
-            return _crates.ContainsKey(id);
+            return _map.ContainsKey(id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetCrate(ulong id, out IParameterCrate result, bool onlyInSelf = false)
+        public bool TryGetCrate(ulong id, out Parameter result, bool onlyInSelf = false)
         {
             result = null;
 
             if (HasCrate(id) == true)
             {
-                result = _crates[id];
+                result = _map[id];
                 return true;
             }
 
@@ -116,21 +108,21 @@ namespace Parameters.Runtime.Common
             if (Parent == null || Parent.HasCrate(id) == false)
                 return false;
 
-            result = Parent._crates[id];
+            result = Parent._map[id];
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IParameterCrate GetCrate(ulong crateId)
+        public Parameter GetParameter(ulong parameterId)
         {
-            if (HasCrate(crateId) == true)
-                return _crates[crateId];
+            if (HasCrate(parameterId) == true)
+                return _map[parameterId];
 
-            if (Parent != null && Parent.HasCrate(crateId) == true)
-                return Parent._crates[crateId];
+            if (Parent != null && Parent.HasCrate(parameterId) == true)
+                return Parent._map[parameterId];
 
 #if UNITY_EDITOR
-            throw new KeyNotFoundException($"Крейт с id {crateId} не найден");
+            throw new KeyNotFoundException($"Параметр с id {parameterId} не найден");
 #endif
             return null;
         }

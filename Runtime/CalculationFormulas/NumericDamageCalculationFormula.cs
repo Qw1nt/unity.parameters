@@ -4,13 +4,14 @@ using System.Linq.Expressions;
 using Parameters.Runtime.Base;
 using Parameters.Runtime.Common;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.CalculationFormulas
 {
     [CreateAssetMenu(menuName = BaseMenuName + nameof(NumericDamageCalculationFormula))]
     public class NumericDamageCalculationFormula : CalculationFormulaDataBase
     {
-        [SerializeField] private ParameterCrateData _overallBoostCrate;
+        [FormerlySerializedAs("_overallBoostCrate")] [SerializeField] private ParameterData _overallBoost;
 
         /*
         private void OnValidate()
@@ -34,7 +35,7 @@ namespace Parameters.Runtime.CalculationFormulas
         {
             return new List<ulong>
             {
-                _overallBoostCrate.Id
+                _overallBoost.Id
             };
         }
 

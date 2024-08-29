@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Reflection;
 using Parameters.Runtime.Base;
+using Parameters.Runtime.Interfaces;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Parameters.Editor
 {
-    [CustomEditor(typeof(ParameterCrateData))]
+    [CustomEditor(typeof(ParameterData))]
     public class ParameterCrateDataCustomInspector : UnityEditor.Editor
     {
         private string _selectedTypeName;
-        private ParameterCrateData _crateData;
+        private ParameterData _data;
 
         private void OnEnable()
         {
-            _crateData = (ParameterCrateData)target;
+            _data = (ParameterData)target;
             TrySetSelectedTypeName();
         }
 
@@ -33,29 +34,23 @@ namespace Parameters.Editor
                 : _selectedTypeName;
 
             if (GUILayout.Button(buttonText, EditorStyles.popup) == true)
-                BuildMenu();
+                SetReference();
 
             EditorGUILayout.EndHorizontal();
         }
 
-        private void BuildMenu()
+        private void SetReference()
         {
             var window = CreateInstance<SearchParameterTypeWindow>();
             window.SetSelectCallback(type =>
             {
-                var constructor = type.GetConstructor(
-                    BindingFlags.Instance | BindingFlags.NonPublic, 
-                    null, 
-                new Type[] {}, 
-                    null);
+                var instance = Activator.CreateInstance(type);
+                _data.Data = instance;
                 
-                var instance = constructor!.Invoke(new object[] {}); //Activator.CreateInstance(type);
-                _crateData.Data = instance;
-
                 TrySetSelectedTypeName();
                 serializedObject.ApplyModifiedProperties();
 
-                EditorUtility.SetDirty(_crateData);
+                EditorUtility.SetDirty(target);
             });
 
             SearchWindow.Open(new SearchWindowContext(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)), window);
@@ -63,8 +58,8 @@ namespace Parameters.Editor
 
         private void TrySetSelectedTypeName()
         {
-            if (_crateData.Data != null)
-                _selectedTypeName = _crateData.Data.GetType().Name.Split('.')[^1];
+            if (_data.Data != null)
+                _selectedTypeName = _data.Data.GetType().GetDisplayName();
         }
     }
 }

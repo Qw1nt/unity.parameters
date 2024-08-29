@@ -2,10 +2,10 @@
 
 namespace Parameters.Runtime.Interfaces
 {
-    public interface IParameterCrateFactory
+    public interface IParameterFactory
     {
         ulong Id { get; }
         
-        IParameterCrate CreateCrate(ParameterDocker docker);
+        Parameter CreateParameter(ParameterDocker docker);
     }
 }

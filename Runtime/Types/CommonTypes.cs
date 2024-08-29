@@ -1,66 +1,65 @@
 ﻿using Parameters.Runtime.Attributes;
-using Parameters.Runtime.Common;
 
 namespace Parameters.Runtime.Types
 {
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class CooldownDurationCrate
+    [Parameter(typeof(float))]
+    public partial struct CooldownDurationCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class CriticalChanceCrate
+    [Parameter(typeof(float))]
+    public partial struct CriticalChanceCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class CriticalDamageCrate
+    [Parameter(typeof(float))]
+    public partial struct CriticalDamageCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class ExecutionChance
+    [Parameter(typeof(float))]
+    public partial struct ExecutionChance
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class ExperienceAmountMultiplierCrate
+    [Parameter(typeof(float))]
+    public partial struct ExperienceAmountMultiplierCrate
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class MaxHealth
+    [Parameter(typeof(int))]
+    public partial struct MaxHealth
     {
     }
     
-    public partial class Health
+    public partial struct Health
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class IncreaseMaxHealthParameterCrateDataBoost
+    [Parameter(typeof(float))]
+    public partial struct IncreaseMaxHealthParameterCrateDataBoost
     {
     }
 
-    [ParameterCrateDescription(typeof(SingleIntDescriptor))]
-    public partial class Level
+    [Parameter(typeof(int))]
+    public partial struct Level
     {
     }
     
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class AttackSpeedCrate
+    [Parameter(typeof(float))]
+    public partial struct AttackSpeedCrate
     {
         
     }
     
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class AttackRangeCrate
+    [Parameter(typeof(float))]
+    public partial struct AttackRangeCrate
     {
         
     }
 
-    [ParameterCrateDescription(typeof(SingleFloatDescriptor))]
-    public partial class ReloadDuration
+    [Parameter(typeof(float))]
+    public partial struct ReloadDuration
     {
         
     }

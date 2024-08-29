@@ -1,10 +1,9 @@
 using Parameters.Runtime.Attributes;
-using Parameters.Runtime.Common;
 
-namespace Plugins.Parameters.Runtime.Types
+namespace Parameters.Runtime.Types
 {
-    [ParameterCrateDescription(typeof(SingleIntDescriptor))]
-    public partial class MapSize
+    [Parameter(typeof(int))]
+    public partial struct MapSize
     {
     
     }

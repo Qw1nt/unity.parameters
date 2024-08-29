@@ -13,9 +13,9 @@ namespace Parameters.Runtime.Formatters
             return Math.Round(value, 3);
         }
 
-        public override double GetFormattedValue(ParameterDocker docker, ParameterCrateData crateData)
+        public override double GetFormattedValue(ParameterDocker docker, ParameterData data)
         {
-            return Math.Round(docker.GetCrate(crateData.Id).GetValue(), 3);
+            return Math.Round(docker.GetParameter(data.Id).GetRawValue(), 3);
         }
     }
 } 

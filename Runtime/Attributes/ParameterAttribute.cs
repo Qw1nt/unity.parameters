@@ -2,9 +2,10 @@
 
 namespace Parameters.Runtime.Attributes
 {
+    [AttributeUsage(AttributeTargets.Struct)]
     public class ParameterAttribute : Attribute
     {
-        public ParameterAttribute(Type descriptor)
+        public ParameterAttribute(Type type)
         {
             
         }

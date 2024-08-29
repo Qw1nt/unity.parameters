@@ -1,4 +1,4 @@
-﻿namespace Parameters.Runtime.Common
+﻿/*namespace Parameters.Runtime.Common
 {
     public struct SingleIntDescriptor
     {
@@ -18,4 +18,4 @@
             return descriptor;
         }
     }
-}
+}*/

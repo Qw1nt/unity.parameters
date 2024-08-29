@@ -9,24 +9,24 @@ namespace Parameters.Runtime.Common
     [DefaultExecutionOrder(-1100)]
     public class ParameterInitializerMonoProvider : MonoBehaviour
     {
-        [SerializeField] private ParameterCrateData[] _crates;
+        [SerializeField] private ParameterData[] _crates;
         [SerializeField] private CalculationFormulaDataBase[] _formulas;
 
         private void Awake()
         {
-            ParameterInitializer.Initialize(_crates, _formulas);
+            ParameterInitializer.Initialize(_crates);
         }
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            var assets = new List<ParameterCrateData>();
-            var guids = UnityEditor.AssetDatabase.FindAssets($"t:{nameof(ParameterCrateData).ToLower()}");
+            var assets = new List<ParameterData>();
+            var guids = UnityEditor.AssetDatabase.FindAssets($"t:{nameof(ParameterData).ToLower()}");
 
             foreach (var guid in guids)
             {
                 var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<ParameterCrateData>(path);
+                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<ParameterData>(path);
                 assets.Add(asset);
             }
 

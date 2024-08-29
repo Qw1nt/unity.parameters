@@ -15,9 +15,9 @@ namespace Parameters.Runtime
     [CreateAssetMenu(menuName = "Parameters/DockerData")]
     public class ParametersDockerData : ScriptableObject
     {
-        [SerializeField] private ParameterCrateInDocker[] _parameters;
+        [SerializeField] private ParameterInDocker[] _parameters;
 
-        public IReadOnlyList<ParameterCrateInDocker> Parameters => _parameters;
+        public IReadOnlyList<ParameterInDocker> Parameters => _parameters;
 
         public ParameterDocker Create(IDockerHolder holder)
         {
@@ -25,15 +25,16 @@ namespace Parameters.Runtime
         }
 
         [Serializable]
-        public class ParameterCrateInDocker : IParameterCrateFactory
+        public class ParameterInDocker : IParameterFactory
         {
 #if PARAMETERS_TRI_INSPECTOR
             [Title("$" + nameof(CrateName))]
 #endif
-            [FormerlySerializedAs("_crateCrate")] [SerializeField] private ParameterCrateData _crate;
+            [FormerlySerializedAs("_crateCrate")] [SerializeField] private ParameterData _crate;
 
             [Space] [SerializeField] private bool _withDefaultValue;
             [SerializeField] private float _defaultValue;
+            [SerializeField] private float _overallValue = 1f;
 
             private string CrateName => _crate.DebugName;
 
@@ -41,13 +42,15 @@ namespace Parameters.Runtime
 
             public float DefaultValue => _defaultValue;
 
-            public IParameterCrate CreateCrate(ParameterDocker docker)
+            public Parameter CreateParameter(ParameterDocker docker)
             {
-                var instance = _crate.CreateCrate(docker);
+                var instance = _crate.CreateParameter(docker);
 
                 if (_withDefaultValue == true)
-                    _crate.AddDefaultValue(instance, _defaultValue);
+                    instance.Value.CleanValue = _defaultValue;
 
+                instance.Overall.CleanValue = _overallValue;
+                
                 return instance;
             }
         }
