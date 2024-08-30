@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Parameters.Runtime.Base;
+using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Interfaces;
 using UnityEngine;
@@ -36,6 +37,8 @@ namespace Parameters.Runtime
             [SerializeField] private float _defaultValue;
             [SerializeField] private float _overallValue = 1f;
 
+            [Space] [SerializeField] private CalculationFormula _formula;
+            
             private string CrateName => _crate.DebugName;
 
             public ulong Id => _crate.Id;

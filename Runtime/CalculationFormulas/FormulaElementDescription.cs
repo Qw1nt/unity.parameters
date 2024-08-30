@@ -5,8 +5,11 @@ namespace Parameters.Runtime.CalculationFormulas
     [Serializable]
     public struct FormulaElementDescription
     {
-        public string Expression;
+        public ulong Hash;
 
+        public FormulaDataSource LeftSource;
+        public FormulaDataSource RightSource;
+        
         public int LeftIndex;
         public int RightIndex;
         
@@ -15,5 +18,9 @@ namespace Parameters.Runtime.CalculationFormulas
         
         public float SimpleLeft;
         public float SimpleRight;
+
+        public FormulaOperation OperationType;
+
+        public float CalculatedValue;
     }
 }

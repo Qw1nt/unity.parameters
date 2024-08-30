@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.CalculationFormulas
 {
@@ -9,13 +10,14 @@ namespace Parameters.Runtime.CalculationFormulas
         public ulong Hash;
         public uint Weight;
         public int Position;
-
-        public FormulaItem Type;
-
+        
         public ulong ParameterId;
         public float SimpleValue;
 
         public ulong Left;
         public ulong Right;
+        
+        public FormulaDataSource NodeType;
+        public FormulaOperation MathOperationType;
     }
 }

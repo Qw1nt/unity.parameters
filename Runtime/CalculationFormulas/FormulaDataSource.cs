@@ -1,9 +1,9 @@
 ﻿namespace Parameters.Runtime.CalculationFormulas
 {
-    public enum FormulaItem
+    public enum FormulaDataSource : byte
     {
         Parameter,
-        ComplexValue,
+        OtherDescriptionValue,
         SimpleValue
     }
 }
