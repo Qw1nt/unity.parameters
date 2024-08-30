@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Parameters.Runtime.Extensions;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -9,108 +11,123 @@ namespace Parameters.Runtime.CalculationFormulas
     [CreateAssetMenu]
     public class CalculationFormulaData : ScriptableObject
     {
+        private const int MinDepth = 0;
+
         [SerializeField] private CalculationFormulaElement[] _elements;
 
         [TextArea] [SerializeField] private string _formula;
 
+        [SerializeField] private HashedFormulaElement[] _hashedElements;
+        [SerializeField] private HashedFormulaElement[] _sorted;
         [SerializeField] private FormulaElementDescription[] _descriptions;
+
+        private Dictionary<string, ulong> _elementsMap;
 
         private void OnValidate()
         {
-            var s = ParseToSimple(_formula);
+            _elementsMap = _elements.ToDictionary(x => x.ShortName, x => x.ParameterData.Id);
+            var result = new List<HashedFormulaElement>();
 
-            /*
-            var formula = new string(_formula);
-            var que = new Queue<string>();
+            var pointer = 0;
 
-            while (formula.Length > 0)
+            if (char.IsWhiteSpace(_formula[^1]) == false)
+                _formula += ' ';
+
+            while (pointer < _formula.Length)
             {
-                var openS = formula.IndexOf('(');
-                var closeS = formula.IndexOf(')');
+                var hash = _formula.GetRawHash(pointer, out var newPointer);
 
-                if (openS == -1 || closeS == -1)
+                if (newPointer == -1)
                     break;
 
-                que.Enqueue(formula.Substring(openS + 1, closeS - openS - 1));
-                formula = formula.Remove(openS, closeS - openS + 1);
-            }
-            */
-
-            return;
-            var operators = new HashSet<string>() { "+", "-" };
-            var elementsMap = _elements.ToDictionary(x => x.ShortName);
-
-            var descriptions = new List<FormulaElementDescription>();
-            var parts = _formula.Split(' ').Where(x => string.IsNullOrEmpty(x) == false).ToList();
-
-            var i = 0;
-            while (parts.Count > 0)
-            {
-                if (operators.Contains(parts[i]) == false)
+                var item = new HashedFormulaElement
                 {
-                    i++;
-                    continue;
+                    Expression = _formula.Substring(pointer, newPointer - pointer).Replace(" ", ""),
+                    Hash = hash,
+                    Position = newPointer,
+                    Left = result.Count > 0 ? result[^1].Hash : 0UL,
+                };
+
+                item.AdjustElementHash();
+                result.Add(item);
+
+                if (float.TryParse(item.Expression, NumberStyles.Float, CultureInfo.InvariantCulture,
+                        out var simpleValue) == true)
+                {
+                    item.Type = FormulaItem.SimpleValue;
+                    item.SimpleValue = simpleValue;
                 }
-
-                if (i >= 1)
+                else if (_elementsMap.ContainsKey(item.Expression) == true)
                 {
-                    var leftName = parts[i - 1];
-                    var rightName = parts[i + 1];
-
-                    if (elementsMap.ContainsKey(leftName) == false || elementsMap.ContainsKey(rightName) == false)
-                        return;
-
-                    descriptions.Add(new FormulaElementDescription
-                    {
-                        Id = BuildRandomId(),
-                        Left = elementsMap[leftName].ParameterData.Id,
-                        Right = elementsMap[rightName].ParameterData.Id,
-                        Char = parts[i]
-                    });
-
-                    parts.RemoveAt(--i);
-                    parts.RemoveAt(i);
-                    parts.RemoveAt(i);
-                }
-                else if (descriptions.Count > 0 && parts.Count > i + 1)
-                {
-                    if (elementsMap.ContainsKey(parts[i + 1]) == false)
-                        return;
-
-                    descriptions.Add(new FormulaElementDescription()
-                    {
-                        Id = BuildRandomId(),
-                        Left = descriptions[^1].Id,
-                        Right = elementsMap[parts[i + 1]].ParameterData.Id,
-                        Char = parts[i]
-                    });
-
-                    parts.RemoveAt(i);
-                    parts.RemoveAt(i);
+                    item.Type = FormulaItem.Parameter;
+                    item.ParameterId = _elementsMap[item.Expression];
                 }
                 else
                 {
-                    return;
+                    item.Type = FormulaItem.ComplexValue;
                 }
+
+                if (result.Count > 1)
+                    result[^2].Right = result[^1].Hash;
+
+                pointer = newPointer;
             }
 
-            _descriptions = descriptions.ToArray();
+            var operators = result
+                .Where(x => x.IsOperator() == true)
+                .ToList();
 
-            ulong BuildRandomId()
+            foreach (var item in operators)
             {
-                return (ulong)Random.Range(int.MaxValue / 2, int.MaxValue) *
-                       (ulong)Random.Range(int.MaxValue / 2, int.MaxValue);
+                var index = result.IndexOf(item);
+                var weight = 0u;
+
+                for (int i = 0; i < index; i++)
+                {
+                    var element = result[i];
+
+                    if (element.IsOpenGroup() == true)
+                        weight += element.GetSymbolWeight();
+
+                    if (element.IsCloseGroup() == true)
+                        weight -= element.GetSymbolWeight();
+                }
+
+                item.Weight = weight + item.Hash.GetSymbolWeight();
+            }
+
+            _hashedElements = result.ToArray();
+            _sorted = result.Where(x => x.IsOperator() == true).OrderByDescending(x => x.Weight).ToArray();
+
+            foreach (var element in _sorted)
+            {
             }
         }
 
         private string[] ParseToSimple(string input)
         {
-            var groupBuffer = new Queue<string>();
-            var result = new List<string>();
+            // var groupBuffer = new Queue<string>();
+            // var result = new List<string>();
 
-            var groups = ParseGroups(input);
+            /*var groups = ParseGroups(input);
+            var preparedExpression = groups[^1].InternalExpression;
 
-            var i = 0;
+            _descriptions = new FormulaElementDescription[groups.Length];
+
+            for (int i = 0; i < groups.Length; i++)
+            {
+                _descriptions[i] = new FormulaElementDescription()
+                {
+                    Char = groups[i].InternalExpression
+                };
+            }*/
+
+            // var items = preparedExpression.Split(' ');
+            // _d = items;
+
+            return null;
+
+            /*var i = 0;
 
             while (i < input.Length)
             {
@@ -131,36 +148,20 @@ namespace Parameters.Runtime.CalculationFormulas
                 var group = groupBuffer.Dequeue();
             }
 
-            return null;
+            return null;*/
         }
 
-        private (int startIndex, int endIndex) GetGroupIndexes(string input, int startIndex)
+        /*private int GetWeight()
         {
-            var depth = 0;
-            var i = startIndex;
 
-            while (i < input.Length)
-            {
-                if (input[i] == '(')
-                    depth++;
+        }*/
 
-                if (input[i] == ')')
-                    depth--;
-
-                if (depth == 0)
-                    return (startIndex, i);
-
-                i++;
-            }
-
-            throw new ArgumentException();
-        }
-
+        /*
         private GroupInfo[] ParseGroups(string input)
         {
             var selectOperation = SelectGroups(input);
             FindGroupsEnds(selectOperation.groups, input);
-            
+
             var sortedGroups = new Dictionary<int, List<GroupInfo>>();
 
             foreach (var info in selectOperation.groups)
@@ -173,7 +174,7 @@ namespace Parameters.Runtime.CalculationFormulas
 
             var result = new GroupInfo[sortedGroups.Sum(x => x.Value.Count)];
 
-            for (int i = selectOperation.maxDepth - 1, j = 0; i >= 0; i--)
+            for (int i = selectOperation.maxDepth - 1, j = 0; i >= MinDepth; i--)
             {
                 foreach (var groupInfo in sortedGroups[i])
                 {
@@ -182,13 +183,29 @@ namespace Parameters.Runtime.CalculationFormulas
                     j++;
                 }
             }
+            */
 
-            var resultMap = result.Where(x => x.Depth > 0).ToDictionary(x => x.Hash);
+            /*var resultList = result.ToList();
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                ref var group = ref result[i];
+                var hash = group.Hash;
+                var expression = group.InternalExpression;
+
+                if (resultList.Any(x => x.InternalExpression.Contains(expression) && x.Hash != hash) == true)
+                {
+                    var index = resultList.IndexOf(result.First(x => x.InternalExpression.Contains(expression) && x.Hash != hash));
+                    result[index].InternalExpression = result[index].InternalExpression.Replace($"({expression})", $"{{{group.Index}}}");
+                }
+            }*/
+
+            /*var resultMap = result.Where(x => x.Depth >= MinDepth).ToDictionary(x => x.Hash);
             var chars = input.ToCharArray().ToList();
-            
+
             for (int i = 0; i < resultMap.Count; i++)
             {
-                var depth = 0;
+                var depth = MinDepth;
                 var firstIndex = 0;
 
                 for (int j = 0; j < chars.Count; j++)
@@ -205,7 +222,7 @@ namespace Parameters.Runtime.CalculationFormulas
                     {
                         depth--;
 
-                        if (depth > 0)
+                        if (depth >= 0)
                         {
                             var lastIndex = j;
                             var hash = CalculateGroupHash(chars, firstIndex, lastIndex);
@@ -216,22 +233,26 @@ namespace Parameters.Runtime.CalculationFormulas
                                 chars.Insert(firstIndex, '}');
                                 chars.Insert(firstIndex, $"{info.Index}"[0]);
                                 chars.Insert(firstIndex, '{');
-                                
+
+                                result[info.Index] = info;
+
                                 break;
                             }
                         }
                     }
                 }
             }
-            
-            var r = new string(chars.ToArray());
-            return null;
+
+            var lastExpression = new string(chars.ToArray());
+            result[^1].InternalExpression = lastExpression;
+
+            return result;
         }
 
         private (GroupInfo[] groups, int maxDepth) SelectGroups(string input)
         {
-            var depth = 0;
-            var maxDepth = 0;
+            var depth = MinDepth;
+            var maxDepth = MinDepth;
             var stringPointer = 0;
 
             var infos = new List<GroupInfo>();
@@ -260,14 +281,14 @@ namespace Parameters.Runtime.CalculationFormulas
 
             return (infos.ToArray(), maxDepth);
         }
-        
+
         private void FindGroupsEnds(GroupInfo[] infos, string input)
         {
             for (int i = 0; i < infos.Length; i++)
             {
                 ref var info = ref infos[i];
                 var pointer = info.StartPosition;
-                var depth = 0;
+                var depth = MinDepth;
 
                 while (pointer < input.Length)
                 {
@@ -277,14 +298,15 @@ namespace Parameters.Runtime.CalculationFormulas
                     if (input[pointer] == ')')
                         depth--;
 
-                    if (depth == 0)
+                    if (depth == MinDepth)
                     {
                         info.EndPosition = pointer;
-                        info.InternalExpression = input.Substring(info.StartPosition + 1, pointer - info.StartPosition - 1);
+                        info.InternalExpression =
+                            input.Substring(info.StartPosition + 1, pointer - info.StartPosition - 1);
                         CalculateGroupHash(ref info, input);
                         break;
                     }
-                    
+
                     pointer++;
                 }
             }
@@ -305,12 +327,12 @@ namespace Parameters.Runtime.CalculationFormulas
 
             info.Hash = hash;
         }
-        
+
         private ulong CalculateGroupHash(List<char> chars, int startIndex, int endIndex)
         {
             var hash = 0UL;
             var salt = 0;
-            
+
             for (int i = startIndex; i <= endIndex; i++)
             {
                 hash += (ulong)chars[i].GetHashCode();
@@ -320,7 +342,7 @@ namespace Parameters.Runtime.CalculationFormulas
             }
 
             return hash;
-        }
+        }*/
 
         private struct GroupInfo
         {

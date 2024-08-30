@@ -5,9 +5,15 @@ namespace Parameters.Runtime.CalculationFormulas
     [Serializable]
     public struct FormulaElementDescription
     {
-        public ulong Id;
-        public string Char;
-        public ulong Left;
-        public ulong Right;
+        public string Expression;
+
+        public int LeftIndex;
+        public int RightIndex;
+        
+        public ulong LeftParameterId;
+        public ulong RightParameterId;
+        
+        public float SimpleLeft;
+        public float SimpleRight;
     }
 }
