@@ -109,13 +109,13 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SaveChanges()
+        internal void SaveChanges()
         {
             if (Subscribers == null)
                 return;
 
             foreach (var subscriber in Subscribers)
-                subscriber.Invoke(this, Docker);
+                subscriber.Invoke(Docker, this);
         }
     }
 }

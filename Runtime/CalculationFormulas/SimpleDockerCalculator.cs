@@ -29,15 +29,14 @@ namespace Parameters.Runtime.CalculationFormulas
             foreach (var parameterId in docker.CalculationBuffer)
             {
                 var parameter = docker.GetParameter(parameterId);
-                    
-                if(parameter.Formula == null)
-                    continue;
-                    
-                var length = parameter.Formula.Length;
+                var length = parameter.Formula?.Length ?? 0;
 
-                if (length == 0)
+                if (parameter.Formula == null || length == 0)
+                {
+                    parameter.SaveChanges();
                     continue;
-
+                }
+                    
                 for (int i = 0; i < length; i++)
                 {
                     ref var element = ref parameter.Formula[i];
@@ -48,6 +47,8 @@ namespace Parameters.Runtime.CalculationFormulas
 
                 parameter.Value.CleanValue += formulaResultValue;
                 parameter.Value.ParentModifiedValue += formulaResultValue;
+                
+                parameter.SaveChanges();
             }
 
             docker.CalculationBuffer.Clear();
