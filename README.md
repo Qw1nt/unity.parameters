@@ -13,7 +13,7 @@
 
 ## Установка
 
-Через <b>.unitypackage</b>
+Через <b>[.unitypackage](https://github.com/Qw1nt/unity.parameters/releases/latest/download/unity.parameters.unitypackage)</b>
 
 ## Основное
 
