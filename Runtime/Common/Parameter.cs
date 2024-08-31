@@ -71,20 +71,35 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Update(ref ParameterRawValue value)
+        public void Update(ref ParameterRawValue rawValue)
         {
             for (int i = 0; i < Values.length; i++)
             {
-                if(Values.data[i].Hash != value.Hash)
+                if(Values.data[i].Hash != rawValue.Hash)
                     continue;
 
-                Values.data[i].CleanValue = value.CleanValue;
+                Values.data[i].CleanValue = rawValue.CleanValue;
                 Docker.CalculationBuffer.Add(Id);
                 Docker.MarkDependenciesDirty(Id);
                 break;
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Delete(ref ParameterRawValue value)
+        {
+            for (int i = 0; i < Values.length; i++)
+            {
+                if(Values.data[i].Hash != value.Hash)
+                    continue;
+
+                Values.RemoveAtSwap(i, out _);
+                Docker.CalculationBuffer.Add(Id);
+                Docker.MarkDependenciesDirty(Id);
+                break;
+            }
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddOverall(ParameterRawValue rawValue)
         {
@@ -102,6 +117,22 @@ namespace Parameters.Runtime.Common
                     continue;
 
                 Overalls.data[i].CleanValue = rawValue.CleanValue;
+                Docker.CalculationBuffer.Add(Id);
+                Docker.MarkDependenciesDirty(Id);
+                break;
+            }
+        }
+        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DeleteOverall(ref ParameterRawValue rawValue)
+        {
+            for (int i = 0; i < Overalls.length; i++)
+            {
+                if(Overalls.data[i].Hash != rawValue.Hash)
+                    continue;
+
+                Overalls.RemoveAtSwap(i, out _);
                 Docker.CalculationBuffer.Add(Id);
                 Docker.MarkDependenciesDirty(Id);
                 break;
