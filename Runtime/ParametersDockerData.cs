@@ -39,11 +39,13 @@ namespace Parameters.Runtime
 
             [Space] [SerializeField] private CalculationFormula _formula;
             
-            private string CrateName => _crate.DebugName;
+            private string CrateName => _crate?.DebugName;
 
             public ulong Id => _crate.Id;
 
             public float DefaultValue => _defaultValue;
+
+            public FormulaElementDescription[] Formula => _formula.Descriptions;
 
             public Parameter CreateParameter(ParameterDocker docker)
             {

@@ -17,7 +17,11 @@ namespace Parameters.Runtime.CalculationFormulas
         public FormulaElementDescription[] Descriptions;
 
 #if UNITY_EDITOR
-        public void Prepare()
+        
+#if PARAMETERS_TRI_INSPECTOR
+        [TriInspector.Button]
+#endif
+        public void PrepareFormula()
         {
             var elementsMap = _elements.ToDictionary(x => x.ShortName, x => x.ParameterData.Id);
             var result = new List<HashedFormulaElement>();
@@ -120,12 +124,12 @@ namespace Parameters.Runtime.CalculationFormulas
                         description.LeftParameterId = left.ParameterId;
                     }
 
-                    if (description.RightIndex != -1)
-                        description.RightSource = FormulaDataSource.OtherDescriptionValue;
-                    else if (description.RightParameterId == 0)
-                        description.RightSource = FormulaDataSource.Parameter;
+                    if (description.LeftIndex != -1)
+                        description.LeftSource = FormulaDataSource.OtherDescriptionValue;
+                    else if (description.LeftParameterId != 0)
+                        description.LeftSource = FormulaDataSource.Parameter;
                     else
-                        description.RightSource = FormulaDataSource.SimpleValue;
+                        description.LeftSource = FormulaDataSource.SimpleValue;
                 }
 
                 if (hashedOperator.Right != 0 && hashMap.TryGetValue(rightHash, out var right) == true)
@@ -140,7 +144,7 @@ namespace Parameters.Runtime.CalculationFormulas
 
                     if (description.RightIndex != -1)
                         description.RightSource = FormulaDataSource.OtherDescriptionValue;
-                    else if (description.RightParameterId == 0)
+                    else if (description.RightParameterId != 0)
                         description.RightSource = FormulaDataSource.Parameter;
                     else
                         description.RightSource = FormulaDataSource.SimpleValue;

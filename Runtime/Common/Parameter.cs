@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Interfaces;
 using Scellecs.Collections;
 
@@ -13,15 +14,18 @@ namespace Parameters.Runtime.Common
         internal readonly FastList<ParameterRawValue> Values = new(1);
         internal readonly FastList<ParameterRawValue> Overalls = new(1);
         internal readonly ParameterDocker Docker;
+        
+        internal FormulaElementDescription[] Formula;
 
         internal ParameterRawValue Value;
         internal ParameterRawValue Overall;
 
         internal FastList<CrateUpdateSubscriberBase> Subscribers;
 
-        internal Parameter(ulong id, ParameterDocker docker)
+        internal Parameter(ulong id, FormulaElementDescription[] formula, ParameterDocker docker)
         {
             Id = id;
+            Formula = formula;
             Docker = docker;
         }
 
@@ -50,10 +54,20 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(ParameterRawValue value, ParameterRawValue overall)
+        {
+            Values.Add(value);
+            Overalls.Add(overall);
+            Docker.CalculationBuffer.Add(Id);
+            Docker.MarkDependenciesDirty(Id);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(ParameterRawValue rawValue)
         {
             Values.Add(rawValue);
             Docker.CalculationBuffer.Add(Id);
+            Docker.MarkDependenciesDirty(Id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,6 +80,7 @@ namespace Parameters.Runtime.Common
 
                 Values.data[i].CleanValue = value.CleanValue;
                 Docker.CalculationBuffer.Add(Id);
+                Docker.MarkDependenciesDirty(Id);
                 break;
             }
         }
@@ -75,8 +90,10 @@ namespace Parameters.Runtime.Common
         {
             Overalls.Add(rawValue);
             Docker.CalculationBuffer.Add(Id);
+            Docker.MarkDependenciesDirty(Id);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UpdateOverall(ref ParameterRawValue rawValue)
         {
             for (int i = 0; i < Overalls.length; i++)
@@ -86,10 +103,12 @@ namespace Parameters.Runtime.Common
 
                 Overalls.data[i].CleanValue = rawValue.CleanValue;
                 Docker.CalculationBuffer.Add(Id);
+                Docker.MarkDependenciesDirty(Id);
                 break;
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SaveChanges()
         {
             if (Subscribers == null)

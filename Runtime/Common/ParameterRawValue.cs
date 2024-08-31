@@ -15,7 +15,7 @@ namespace Parameters.Runtime.Common
 
         public float CleanValue;
         public float ParentModifiedValue;
-        
+
         public ParameterRawValue(float cleanValue)
         {
             lock (_locker)
@@ -26,6 +26,12 @@ namespace Parameters.Runtime.Common
 
             CleanValue = cleanValue;
             ParentModifiedValue = cleanValue;
+        }
+
+        public static ParameterRawValue One
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => new ParameterRawValue(1f);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

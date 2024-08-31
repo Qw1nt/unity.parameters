@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Interfaces;
 using Scellecs.Collections;
 
@@ -12,30 +13,49 @@ namespace Parameters.Runtime.Common
         public readonly ParameterDocker Parent;
         
         private readonly Dictionary<ulong, Parameter> _map = new(8);
-        private readonly Queue<ParameterDocker> _childQueue = new(4);
-        private readonly FastList<ParameterDocker> _childBuffer = new(4);
+        private readonly Dictionary<ulong, FastList<Parameter>> _dependencies = new(4); 
+        private readonly Queue<ParameterDocker> _childQueue = new(2);
+        private readonly FastList<ParameterDocker> _childBuffer = new(2);
 
         internal readonly FastList<Parameter> Parameters;
-        internal readonly FastList<ulong> CalculationBuffer;
+        internal readonly HashSet<ulong> CalculationBuffer;
 
         public readonly FastList<ParameterDocker> Children = new();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ParameterDocker(IDockerHolder holder, IReadOnlyList<IParameterFactory> parameters, ParameterDocker parent = null)
         {
             Holder = holder;
             Parent = parent;
             Parameters = new FastList<Parameter>(parameters.Count);
-            CalculationBuffer = new FastList<ulong>(parameters.Count);
+            CalculationBuffer = new HashSet<ulong>(parameters.Count);
 
             foreach (var data in parameters)
             {
                 var instance = data.CreateParameter(this);
+
+                instance.Formula = data.Formula;
                 
                 _map.Add(instance.Id, instance);
                 Parameters.Add(instance);
                 CalculationBuffer.Add(instance.Id);
             }
 
+            foreach (var parameter in Parameters)
+            {
+                if(parameter.Formula == null || parameter.Formula.Length == 0)
+                    continue;
+                
+                foreach (var element in parameter.Formula)
+                {
+                    if (element.LeftSource == FormulaDataSource.Parameter)
+                        AddDependency(parameter.Id, element.LeftParameterId);
+                    
+                    if(element.RightSource == FormulaDataSource.Parameter)
+                        AddDependency(parameter.Id, element.RightParameterId);
+                }
+            }
+            
             if (Holder != null)
                 StaticDockerStorage.Add(this);
 
@@ -44,7 +64,16 @@ namespace Parameters.Runtime.Common
 
             Parent.AddChild(this);
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddDependency(ulong calculatedId, ulong dependedId)
+        {
+            if(_dependencies.ContainsKey(dependedId) == false)
+                _dependencies.Add(dependedId, new FastList<Parameter>(2));
+            
+            _dependencies[dependedId].Add(_map[calculatedId]);
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddChild(ParameterDocker child)
         {
@@ -83,6 +112,18 @@ namespace Parameters.Runtime.Common
                 Children.RemoveSwap(children.data[i], out _);
             
             Parent?.RemoveChild(child);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void MarkDependenciesDirty(ulong id)
+        {
+            if(_dependencies.ContainsKey(id) == false)
+                return;
+
+            var dependencies = _dependencies[id];
+
+            foreach (var dependency in dependencies)
+                CalculationBuffer.Add(dependency.Id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

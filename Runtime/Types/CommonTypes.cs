@@ -53,7 +53,7 @@ namespace Parameters.Runtime.Types
     }
     
     [Parameter(typeof(float))]
-    public partial struct AttackRangeCrate
+    public partial struct AttackRangeParameter
     {
         
     }

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Interfaces;
 using Qw1nt.SelfIds.Runtime;
@@ -39,6 +40,8 @@ namespace Parameters.Runtime.Base
         public int Order => _order;
 
         public string DebugName => _debugName;
+        
+        public FormulaElementDescription[] Formula => null;
 
         public bool IsThisCrateParameter(Parameter parameterRef)
         {
@@ -53,13 +56,13 @@ namespace Parameters.Runtime.Base
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Parameter CreateParameter(ParameterDocker docker)
         {
-            return new Parameter(_id, docker);
+            return new Parameter(_id, Formula, docker);
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Parameter CreateParameter(ParameterDocker docker, float defaultValue)
         {
-            var parameter = new Parameter(_id, docker);
+            var parameter = new Parameter(_id, Formula, docker);
             parameter.Add(new ParameterRawValue(defaultValue));
             
             return parameter;

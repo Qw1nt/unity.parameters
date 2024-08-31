@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Parameters.Runtime.CalculationFormulas;
+using Parameters.Runtime.Extensions;
 using Parameters.Runtime.Interfaces;
 using Scellecs.Collections;
 
@@ -7,7 +10,7 @@ namespace Parameters.Runtime.Common
     public class DockerCalculator : IDockerCalculator
     {
         private const float OneHundredPercent = 1f;
-        
+
         private readonly FastList<ParameterDocker> _dockers;
 
         public DockerCalculator()
@@ -19,20 +22,44 @@ namespace Parameters.Runtime.Common
         {
             foreach (var docker in _dockers)
             {
-                if (docker.CalculationBuffer.length == 0)
+                if (docker.CalculationBuffer.Count == 0)
                     continue;
 
-                foreach (var crateId in docker.CalculationBuffer)
+                foreach (var parameter in docker.CalculationBuffer)
                 {
-                    Calculate(docker, docker.GetParameter(crateId));
+                    Calculate(docker, docker.GetParameter(parameter));
 
                     foreach (var child in docker.Children)
                     {
-                        if (child.TryGetCrate(crateId, out var childParameter, true) == false)
+                        if (child.TryGetCrate(parameter, out var childParameter, true) == false)
                             continue;
 
                         Calculate(child, childParameter);
                     }
+                }
+
+                foreach (var parameterId in docker.CalculationBuffer)
+                {
+                    var parameter = docker.GetParameter(parameterId);
+                    
+                    if(parameter.Formula == null)
+                        continue;
+                    
+                    var length = parameter.Formula.Length;
+
+                    if (length == 0)
+                        continue;
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        ref var element = ref parameter.Formula[i];
+                        element.Calculate(ref parameter.Formula, docker);
+                    }
+
+                    var formulaResultValue = parameter.Formula[^1].CalculatedValue;
+
+                    parameter.Value.CleanValue += formulaResultValue;
+                    parameter.Value.ParentModifiedValue += formulaResultValue;
                 }
 
                 docker.CalculationBuffer.Clear();
