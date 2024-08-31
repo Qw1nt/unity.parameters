@@ -3,7 +3,7 @@
 namespace Parameters.Runtime.Types
 {
     [Parameter(typeof(float))]
-    public partial struct MovementSpeedParameter 
+    public partial struct MovementSpeed 
     {
     }   
 }

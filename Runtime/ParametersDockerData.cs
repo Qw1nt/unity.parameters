@@ -4,6 +4,7 @@ using Parameters.Runtime.Base;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Interfaces;
+using Scellecs.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,7 +32,7 @@ namespace Parameters.Runtime
 #if PARAMETERS_TRI_INSPECTOR
             [Title("$" + nameof(CrateName))]
 #endif
-            [FormerlySerializedAs("_crateCrate")] [SerializeField] private ParameterData _crate;
+            [SerializeField] private ParameterData _parameter;
 
             [Space] [SerializeField] private bool _withDefaultValue;
             [SerializeField] private float _defaultValue;
@@ -39,9 +40,9 @@ namespace Parameters.Runtime
 
             [Space] [SerializeField] private CalculationFormula _formula;
             
-            private string CrateName => _crate?.DebugName;
+            private string CrateName => _parameter?.DebugName;
 
-            public ulong Id => _crate.Id;
+            public ulong Id => _parameter.Id;
 
             public float DefaultValue => _defaultValue;
 
@@ -49,12 +50,12 @@ namespace Parameters.Runtime
 
             public Parameter CreateParameter(ParameterDocker docker)
             {
-                var instance = _crate.CreateParameter(docker);
+                var instance = _parameter.CreateParameter(docker);
 
                 if (_withDefaultValue == true)
-                    instance.Value.CleanValue = _defaultValue;
+                    instance.Values.Add(new ParameterRawValue(_defaultValue));
 
-                instance.Overall.CleanValue = _overallValue;
+                instance.Overalls.Add(new ParameterRawValue(_overallValue));
                 
                 return instance;
             }

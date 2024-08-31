@@ -9,6 +9,6 @@ namespace Parameters.Runtime.Interfaces
         
         Parameter CreateParameter(ParameterDocker docker);
 
-        public FormulaElementDescription[] Formula { get; }
+        FormulaElementDescription[] Formula { get; }
     }
 }
