@@ -1,5 +1,5 @@
 <p align="center">
-<img width="660" src="Screenshots~/Preview.jpg">
+<img src="Screenshots~/Preview.jpg">
 </p>
 
 # Parameter System
