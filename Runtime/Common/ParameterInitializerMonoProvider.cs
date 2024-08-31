@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Parameters.Runtime.Base;
 using UnityEngine;
@@ -9,12 +8,11 @@ namespace Parameters.Runtime.Common
     [DefaultExecutionOrder(-1100)]
     public class ParameterInitializerMonoProvider : MonoBehaviour
     {
-        [SerializeField] private ParameterData[] _crates;
-        [SerializeField] private CalculationFormulaDataBase[] _formulas;
+        [SerializeField] private ParameterData[] _parameters;
 
         private void Awake()
         {
-            ParameterInitializer.Initialize(_crates);
+            ParameterInitializer.Initialize(_parameters);
         }
 
 #if UNITY_EDITOR
@@ -30,7 +28,7 @@ namespace Parameters.Runtime.Common
                 assets.Add(asset);
             }
 
-            _crates = assets.Where(x => x.Id != 0UL && x.Data != null).ToArray();
+            _parameters = assets.Where(x => x.Id != 0UL && x.Data != null).ToArray();
         }
 #endif
     }

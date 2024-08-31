@@ -12,7 +12,7 @@ using UnityEngine.Localization;
 
 namespace Parameters.Runtime.Base
 {
-    [CreateAssetMenu(menuName = "Parameters/Crate Data")]
+    [CreateAssetMenu(menuName = "Parameters/Parameter Data")]
     public partial class ParameterData : ScriptableObject, IParameterFactory, IParameterStaticIdSetter, IParameterData
     {
         [SerializeField] private Id _id;
