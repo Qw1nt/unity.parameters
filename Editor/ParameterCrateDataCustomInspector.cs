@@ -25,7 +25,7 @@ namespace Parameters.Editor
             EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Class: ");
+            EditorGUILayout.PrefixLabel("Initializator: ");
 
             var buttonText = string.IsNullOrEmpty(_selectedTypeName) == true
                 ? "Select Type"
