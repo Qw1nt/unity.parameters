@@ -50,9 +50,9 @@ namespace Parameters.Runtime.Base
 
         public FormulaElementDescription[] Formula => null;
 
-        public bool IsThisCrateParameter(Parameter parameterRef)
+        public bool IsThisCrateParameter(ComplexParameter complexParameterRef)
         {
-            return Id == parameterRef.Id;
+            return Id == complexParameterRef.Id;
         }
 
         public void SetStaticId(ulong id)
@@ -61,18 +61,15 @@ namespace Parameters.Runtime.Base
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Parameter CreateParameter(ParameterDocker docker)
+        public ComplexParameter CreateParameter(ComplexParameterContainer container)
         {
-            return new Parameter(_id, Formula, docker);
+            return new ComplexParameter(_id, Formula, null, container);
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Parameter CreateParameter(ParameterDocker docker, float defaultValue)
+        public ComplexParameter CreateParameter(ComplexParameterContainer container, FormulaElementDescription[] formula, ulong[] dependencies)
         {
-            var parameter = new Parameter(_id, Formula, docker);
-            parameter.Add(new ParameterRawValue(defaultValue));
-
-            return parameter;
+            return new ComplexParameter(_id, formula, dependencies, container);
         }
 
 #if PARAMETERS_UINITY_LOCALIZATION && PARAMETERS_UNITASK

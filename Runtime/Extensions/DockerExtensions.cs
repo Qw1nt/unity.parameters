@@ -7,20 +7,20 @@ namespace Parameters.Runtime.Extensions
     public static class DockerExtensions 
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ParameterDocker SafeGetDocker(this IDockerHolder holder)
+        public static ComplexParameterContainer SafeGetDocker(this IParameterContainerHolder holder)
         {
-            return StaticDockerStorage.GetSingle(holder.GetInstanceID());
+            return ComplexParameterContainerStorage.GetSingle(holder.GetInstanceID());
         }   
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ParameterDocker GetDocker(this IDockerHolder holder)
+        public static ComplexParameterContainer GetDocker(this IParameterContainerHolder holder)
         {
-            return StaticDockerStorage.GetSingle(holder.GetInstanceID());
+            return ComplexParameterContainerStorage.GetSingle(holder.GetInstanceID());
         }
 
-        public static void MakePlayerDocker(this ParameterDocker docker)
+        public static void MakePlayerDocker(this ComplexParameterContainer container)
         {
-            StaticDockerStorage.PlayerDocker = docker;
+            ComplexParameterContainerStorage.PlayerContainer = container;
         }
     }
 }

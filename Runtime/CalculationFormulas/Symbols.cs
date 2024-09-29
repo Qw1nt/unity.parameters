@@ -2,11 +2,11 @@
 {
     public class Symbols
     {
-       public const char OpenGroup = '(';
-       public const char CloseGroup = ')';
-       public const char Multiply = '*';
-       public const char Divide = '/';
-       public const char Add = '+';
-       public const char Subtract = '-';
+       public const string OpenGroup = "(";
+       public const string CloseGroup = ")";
+       public const string Multiply = "*";
+       public const string Divide = "/";
+       public const string Add = "+";
+       public const string Subtract = "-";
     }
 }

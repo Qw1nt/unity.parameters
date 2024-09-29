@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Parameters.Initializer.Generator.Base;
+using Parameters.Initializer.Generator.Common;
 
 
 namespace Parameters.Initializer.Generator.Generators;
@@ -29,7 +30,7 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
     private void Execute(SourceProductionContext context,
         ImmutableArray<ItemToGeneration<StructDeclarationSyntax>> source)
     {
-        const string baseClassName = "Parameter";
+        const string baseClassName = "ComplexParameter";
 
         foreach (var syntax in source)
         {
@@ -57,7 +58,6 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                          using Parameters.Runtime.Common;
                          using Parameters.Runtime.Interfaces;
                          using Unity.IL2CPP.CompilerServices;
-                         using Scellecs.Collections;
                          using System;
                          using System.Collections.Generic;
                          using System.Runtime.CompilerServices;
@@ -79,13 +79,13 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                  public {{generatedType}} GetValue()
                                  {
-                                    return ({{generatedType}})(Ref.GetRawValue() * Ref.GetRawOverallValue());
+                                    return ({{generatedType}})(Ref.GetFlat() * Ref.GetPercent());
                                  }
                                  
                                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                  public {{generatedType}} GetCleanValue()
                                  {
-                                    return ({{generatedType}})Ref.GetCleanRawValue();
+                                    return ({{generatedType}})Ref.GetFlat();
                                  }   
                              }
                              
@@ -109,53 +109,23 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                   public static partial class ParameterDockerExtensions
                                   {
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                                      public static bool TryGet{{typeName}}(this ParameterDocker docker, out {{typeName}} result)
+                                      public static bool TryGet{{typeName}}(this {{Constants.Interfaces.IParameterContainer}} container, out {{typeName}} result)
                                       {
                                           var id = {{typeName}}.StaticId.Value;
                                           result = default;
                                           
-                                          if (docker.HasCrate(id) == false)
+                                          if (container.Has(id) == false)
                                              return false;
                                           
-                                          result = new {{typeName}}(docker.GetParameter(id));
+                                          result = new {{typeName}}(container.Get(id));
                                           return true;
                                       }     
                                       
                                       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                                      public static {{typeName}} Get{{typeName}}(this ParameterDocker docker)
+                                      public static {{typeName}} Get{{typeName}}(this {{Constants.Interfaces.IParameterContainer}} container)
                                       {
-                                          return new {{typeName}}(docker.GetParameter({{typeName}}.StaticId.Value));
+                                          return new {{typeName}}(container.Get({{typeName}}.StaticId.Value));
                                       }     
-                                      
-                                      /*
-                                      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                                      public static {{typeName}}.Parameter Create{{parameterExtensionName}}(this ParameterDocker docker)
-                                      {
-                                          var crate = docker.GetCrate({{typeName}}.Parameter.Id.Value);
-                                      
-                              #if UNITY_EDITOR
-                                          if (crate is ParameterCrateDescriptionBase == false)
-                                              throw new ArgumentException("");
-                              #endif
-                              
-                                          if (crate is ParameterCrateDescriptionBase parameterCrate == true)
-                                              return ({{typeName}}.Parameter) parameterCrate.CreateParameter();
-                              
-                                          return null;
-                                      }
-                                      
-                                      
-                                      public static {{typeName}} {{getParameterExtensionName}}(this FastList<IParameterRef> parameters)
-                                      {
-                                          foreach (var parameter in parameters)
-                                          {
-                                              if (parameter.ParameterId == {{typeName}}.Parameter.Id.Value)
-                                                  return ({{typeName}}.Parameter) parameter;
-                                          }
-                                          
-                                          return null;
-                                      }
-                                      */
                                   }
                               """);
 

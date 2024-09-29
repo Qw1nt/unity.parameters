@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Parameters.Runtime.CalculationFormulas;
 
@@ -7,98 +8,76 @@ namespace Parameters.Runtime.Extensions
     internal static class FormulaExtensions
     {
         private const ulong Offset = 777_777_777_777_777_777UL;
+
+        private static readonly List<FormulaElementMeta> Meta = new()
+        {
+            new FormulaElementMeta(Symbols.OpenGroup, 600_000_000UL, 100_000u, FormulaOperation.None),
+            new FormulaElementMeta(Symbols.CloseGroup, 500_000_000UL, 100_000u, FormulaOperation.None),
+            new FormulaElementMeta(Symbols.Multiply, (ulong)FormulaOperation.Multiply, 10_000u, FormulaOperation.Multiply),
+            new FormulaElementMeta(Symbols.Divide, (ulong)FormulaOperation.Divide, 10_000u, FormulaOperation.Divide),
+            new FormulaElementMeta(Symbols.Add, (ulong)FormulaOperation.Add, 1000u, FormulaOperation.Add),
+            new FormulaElementMeta(Symbols.Subtract, (ulong)FormulaOperation.Subtract, 1000u, FormulaOperation.Subtract),
+        };
         
-        private static readonly Dictionary<char, ulong> ReservedSymbolsMap = new()
-        {
-            { Symbols.OpenGroup, 600_000_000UL },
-            { Symbols.CloseGroup, 500_000_000UL },
-            { Symbols.Multiply, (ulong)FormulaOperation.Multiply },
-            { Symbols.Divide, (ulong)FormulaOperation.Divide },
-            { Symbols.Add, (ulong)FormulaOperation.Add },
-            { Symbols.Subtract, (ulong)FormulaOperation.Subtract },
-        };
-
-        private static readonly Dictionary<char, uint> CharWeightTable = new()
-        {
-            { Symbols.OpenGroup, 100_000u },
-            { Symbols.CloseGroup, 100_000u },
-            { Symbols.Multiply, 10_000u },
-            { Symbols.Divide, 10_000u },
-            { Symbols.Add, 1000u },
-            { Symbols.Subtract, 1000u }
-        };
-
-        private static readonly Dictionary<ulong, uint> HashWeightTable = new()
-        {
-            { ReservedSymbolsMap[Symbols.OpenGroup], CharWeightTable[Symbols.OpenGroup] },
-            { ReservedSymbolsMap[Symbols.CloseGroup], CharWeightTable[Symbols.CloseGroup] },
-            { (ulong)FormulaOperation.Multiply, CharWeightTable[Symbols.Multiply] },
-            { (ulong)FormulaOperation.Divide, CharWeightTable[Symbols.Divide] },
-            { (ulong)FormulaOperation.Add, CharWeightTable[Symbols.Add] },
-            { (ulong)FormulaOperation.Subtract, CharWeightTable[Symbols.Subtract] }
-        };
-
-        private static readonly Dictionary<char, FormulaOperation> OperationsMap = new()
-        {
-            {Symbols.Multiply, FormulaOperation.Multiply},
-            {Symbols.Divide, FormulaOperation.Divide},
-            {Symbols.Add, FormulaOperation.Add},
-            {Symbols.Subtract, FormulaOperation.Subtract},
-        };
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsReserved(this char symbol)
         {
-            return ReservedSymbolsMap.ContainsKey(symbol);
+            return Meta.Any(x => x.Symbol[0] == symbol);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsReserved(this string symbol)
+        {
+            return Meta.Any(x => x.Symbol == symbol);
+        }  
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsReserved(this ulong hash)
         {
-            return ReservedSymbolsMap.ContainsValue(hash);
+            return Meta.Any(x => x.Hash == hash);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsOperator(this HashedFormulaElement element)
         {
-            return element.GetNormalizedElementHash() switch
-            {
-                (ulong)FormulaOperation.Multiply => true,
-                (ulong)FormulaOperation.Divide => true,
-                (ulong)FormulaOperation.Subtract => true,
-                (ulong)FormulaOperation.Add => true,
-                _ => false
-            };
+            var normalizedElementHash = element.GetNormalizedElementHash();
+            return Meta.Any(x => x.Hash == normalizedElementHash && x.Operation != FormulaOperation.None);
         }
-        
+
         public static bool IsOpenGroup(this HashedFormulaElement element)
         {
-            return element.GetNormalizedElementHash() == ReservedSymbolsMap[Symbols.OpenGroup];
+            return Meta.Any(x => x.Hash == element.GetNormalizedElementHash() && x.Symbol == Symbols.OpenGroup);
         }
-        
+
         public static bool IsCloseGroup(this HashedFormulaElement element)
         {
-            return element.GetNormalizedElementHash() == ReservedSymbolsMap[Symbols.CloseGroup];
+            return Meta.Any(x => x.Hash == element.GetNormalizedElementHash() && x.Symbol == Symbols.CloseGroup);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong GetReservedCharHash(this char symbol)
         {
-            return ReservedSymbolsMap[symbol];
+            return Meta.First(x => x.Symbol[0] == symbol).Hash;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong GetReservedCharHash(this string symbol)
+        {
+            return Meta.First(x => x.Symbol == symbol).Hash;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint GetSymbolWeight(this HashedFormulaElement element)
         {
-            return HashWeightTable[element.GetNormalizedElementHash()];
+            return Meta.First(x => x.Hash == element.GetNormalizedElementHash()).Weight;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FormulaOperation GetOperationType(this HashedFormulaElement element)
         {
-            return OperationsMap[element.Expression[0]];
+            return Meta.First(x => x.Symbol == element.Expression).Operation;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong GetRawHash(this string input, int startPosition, out int endPosition)
         {
@@ -117,7 +96,7 @@ namespace Parameters.Runtime.Extensions
 
             var firstChar = input[endPosition];
 
-            if (ReservedSymbolsMap.ContainsKey(firstChar) == true)
+            if (Meta.Any(x => x.Symbol[0] == firstChar) == true)
             {
                 endPosition++;
                 return firstChar.GetReservedCharHash();
@@ -147,7 +126,7 @@ namespace Parameters.Runtime.Extensions
                     return hash;
                 }
             }
-            
+
             endPosition++;
             return hash;
         }

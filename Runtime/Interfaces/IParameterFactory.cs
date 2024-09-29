@@ -7,7 +7,7 @@ namespace Parameters.Runtime.Interfaces
     {
         ulong Id { get; }
         
-        Parameter CreateParameter(ParameterDocker docker);
+        ComplexParameter CreateParameter(ComplexParameterContainer container);
 
         FormulaElementDescription[] Formula { get; }
     }

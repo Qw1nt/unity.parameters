@@ -2,24 +2,24 @@
 {
     public readonly struct ObservableParameter
     {
-        internal ObservableParameter(Parameter value)
+        internal ObservableParameter(ComplexParameter value)
         {
             Value = value;
         }
 
-        internal readonly Parameter Value;
+        internal readonly ComplexParameter Value;
     }
 
     public readonly struct ObservableParameter<T>
         where T : class
     {
-        internal ObservableParameter(Parameter value, T data)
+        internal ObservableParameter(ComplexParameter value, T data)
         {
             Value = value;
             Data = data;
         }
 
-        internal readonly Parameter Value;
+        internal readonly ComplexParameter Value;
         internal readonly T Data;
     }
 }

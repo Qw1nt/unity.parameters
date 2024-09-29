@@ -9,6 +9,6 @@ namespace Parameters.Runtime.Base
 
         public abstract double Format(double value);
         
-        public abstract double GetFormattedValue(ParameterDocker docker, ParameterData data);
+        public abstract double GetFormattedValue(ComplexParameterContainer container, ParameterData data);
     }
 }

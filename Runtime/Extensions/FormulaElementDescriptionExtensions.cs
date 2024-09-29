@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
+using UnityEngine;
 
 namespace Parameters.Runtime.Extensions
 {
@@ -8,7 +9,9 @@ namespace Parameters.Runtime.Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Calculate(this ref FormulaElementDescription element,
-            ref FormulaElementDescription[] descriptions, ParameterDocker docker)
+            ref FormulaElementDescription[] descriptions,
+            ulong targetId,
+            ComplexParameterContainer container)
         {
             var left = default(float);
             var right = default(float);
@@ -16,9 +19,11 @@ namespace Parameters.Runtime.Extensions
             switch (element.LeftSource)
             {
                 case FormulaDataSource.Parameter:
-                    var leftParameter = docker.GetParameter(element.LeftParameterId);
-                    left = leftParameter.Value.ParentModifiedValue *
-                           leftParameter.Overall.ParentModifiedValue;
+                    var leftParameter = container.Get(element.LeftParameterId);
+
+                    left = element.LeftParameterId == targetId
+                        ? leftParameter.CalculatedFlat.ParentModifiedValue
+                        : leftParameter.CalculatedFlat.ParentModifiedValue * leftParameter.CalculatedPercent.ParentModifiedValue;
                     break;
 
                 case FormulaDataSource.OtherDescriptionValue:
@@ -33,9 +38,11 @@ namespace Parameters.Runtime.Extensions
             switch (element.RightSource)
             {
                 case FormulaDataSource.Parameter:
-                    var leftParameter = docker.GetParameter(element.RightParameterId);
-                    right = leftParameter.Value.ParentModifiedValue *
-                            leftParameter.Overall.ParentModifiedValue;
+                    var rightParameter = container.Get(element.RightParameterId);
+
+                    right = element.RightParameterId == targetId
+                        ? rightParameter.CalculatedFlat.ParentModifiedValue
+                        : rightParameter.CalculatedFlat.ParentModifiedValue * rightParameter.CalculatedPercent.ParentModifiedValue;
                     break;
 
                 case FormulaDataSource.OtherDescriptionValue:

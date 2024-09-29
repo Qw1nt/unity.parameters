@@ -1,6 +1,6 @@
 ﻿namespace Parameters.Runtime.Common
 {
-    public readonly struct StaticId
+    internal readonly struct StaticId
     {
         public readonly ulong Value;
         public readonly bool HasValue;

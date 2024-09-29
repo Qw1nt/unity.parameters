@@ -1,18 +1,18 @@
 ﻿using System;
-using Scellecs.Collections;
+using Parameters.Runtime.Collections;
 
 namespace Parameters.Runtime.Common
 {
     internal abstract class CrateUpdateSubscriberBase : IDisposable
     {
-        private readonly FastList<CrateUpdateSubscriberBase> _storage;
+        private readonly SwapList<CrateUpdateSubscriberBase> _storage;
 
-        internal CrateUpdateSubscriberBase(Parameter parameter)
+        internal CrateUpdateSubscriberBase(ComplexParameter complexParameter)
         {
-            _storage = parameter.Subscribers;
+            _storage = complexParameter.Subscribers;
         }
 
-        internal abstract void Invoke(ParameterDocker docker, Parameter parameter);
+        internal abstract void Invoke(ComplexParameterContainer container, ComplexParameter complexParameter);
 
         public void Dispose()
         {
@@ -22,36 +22,35 @@ namespace Parameters.Runtime.Common
 
     internal class ParameterUpdateSubscriber : CrateUpdateSubscriberBase
     {
-        private readonly Action<ParameterDocker, Parameter> _callback;
+        private readonly Action<ComplexParameterContainer, ComplexParameter> _callback;
 
-        internal ParameterUpdateSubscriber(Parameter parameter, Action<ParameterDocker, Parameter> callback) :
-            base(parameter)
+        internal ParameterUpdateSubscriber(ComplexParameter complexParameter, Action<ComplexParameterContainer, ComplexParameter> callback) :
+            base(complexParameter)
         {
             _callback = callback;
         }
 
-        internal override void Invoke(ParameterDocker docker, Parameter parameter)
+        internal override void Invoke(ComplexParameterContainer container, ComplexParameter complexParameter)
         {
-            _callback(docker, parameter);
+            _callback(container, complexParameter);
         }
     }
 
     internal class ParameterUpdateSubscriber<TCallbackData> : CrateUpdateSubscriberBase
         where TCallbackData : class
     {
-        private readonly Action<ParameterDocker, Parameter, TCallbackData> _callback;
+        private readonly Action<ComplexParameterContainer, ComplexParameter, TCallbackData> _callback;
         private readonly TCallbackData _data;
 
-        internal ParameterUpdateSubscriber(Parameter parameter,
-            Action<ParameterDocker, Parameter, TCallbackData> callback, TCallbackData data) : base(parameter)
+        internal ParameterUpdateSubscriber(ComplexParameter complexParameter, Action<ComplexParameterContainer, ComplexParameter, TCallbackData> callback, TCallbackData data) : base(complexParameter)
         {
             _callback = callback;
             _data = data;
         }
 
-        internal override void Invoke(ParameterDocker docker, Parameter parameter)
+        internal override void Invoke(ComplexParameterContainer container, ComplexParameter complexParameter)
         {
-            _callback(docker, parameter, _data);
+            _callback(container, complexParameter, _data);
         }
     }
 }

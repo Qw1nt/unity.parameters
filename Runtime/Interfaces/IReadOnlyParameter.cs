@@ -2,12 +2,12 @@
 {
     public interface IReadOnlyParameter
     {
-        public float GetCleanRawValue();
+        public float GetCleanFlat();
 
-        public float GetRawValue();
+        public float GetFlat();
 
-        public float GetCleanRawOverallValue();
+        public float GetCleanPercent();
 
-        public float GetRawOverallValue();
+        public float GetPercent();
     }
 }

@@ -14,6 +14,6 @@ namespace Parameters.Runtime.Interfaces
         
         string DebugName { get; }
         
-        public bool IsThisCrateParameter(Parameter parameter);
+        public bool IsThisCrateParameter(ComplexParameter complexParameter);
     }
 }

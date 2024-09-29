@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Parameters.Runtime.Collections;
 using Parameters.Runtime.Common;
-using Scellecs.Collections;
 
 namespace Parameters.Runtime.Extensions
 {
     public static class ObservableParameterExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IDisposable SubscribeOnUpdate(this ObservableParameter observableParameter,
-            Action<ParameterDocker, Parameter> callback)
+        public static IDisposable SubscribeOnUpdate(this ObservableParameter observableParameter, Action<ComplexParameterContainer, ComplexParameter> callback)
         {
             TryInitSubscribers(observableParameter.Value);
 
@@ -19,8 +18,14 @@ namespace Parameters.Runtime.Extensions
             return subscriber;
         }
 
+        /*public static IDisposable SubscribeOnUpdate<T>(this ObservableParameter<T> observableParameter, T data, Action<T, ParameterDocker, Parameter> callback) 
+            where T : class
+        {
+            return null;
+        }*/
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IDisposable SubscribeOnUpdate<T>(this ObservableParameter<T> observableParameter, Action<ParameterDocker, Parameter, T> callback)
+        public static IDisposable SubscribeOnUpdate<T>(this ObservableParameter<T> observableParameter, Action<ComplexParameterContainer, ComplexParameter, T> callback)
             where T : class
         {
             TryInitSubscribers(observableParameter.Value);
@@ -32,10 +37,10 @@ namespace Parameters.Runtime.Extensions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void TryInitSubscribers(Parameter parameter)
+        private static void TryInitSubscribers(ComplexParameter complexParameter)
         {
-            if (parameter.Subscribers == null)
-                parameter.Subscribers = new FastList<CrateUpdateSubscriberBase>(1);
+            if (complexParameter.Subscribers == null)
+                complexParameter.Subscribers = new SwapList<CrateUpdateSubscriberBase>(1);
         }
     }
 }

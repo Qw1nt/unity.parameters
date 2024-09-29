@@ -5,6 +5,6 @@ namespace Parameters.Runtime.Interfaces
 {
     public interface IParameterHolder
     {
-        [CanBeNull] Parameter GetParameter(ulong parameterId);
+        [CanBeNull] ComplexParameter GetParameter(ulong parameterId);
     }
 }

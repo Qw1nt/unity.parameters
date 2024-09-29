@@ -2,27 +2,42 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Parameters.Runtime.Base;
+using Parameters.Runtime.Common;
 using Parameters.Runtime.Extensions;
+using TriInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.CalculationFormulas
 {
     [Serializable]
-    public class CalculationFormula
+    internal class CalculationFormula
     {
-        [SerializeField] private CalculationFormulaElement[] _elements;
-
+#if UNITY_EDITOR
+        [SerializeField] private List<CalculationFormulaElement> _elements;
+        [ReadOnly] [SerializeField] private List<CalculationFormulaElement> _usages;
         [TextArea] [SerializeField] private string _formula;
+#endif
 
-        public FormulaElementDescription[] Descriptions;
+        [ReadOnly] public FormulaElementDescription[] Descriptions;
+        [ReadOnly] public ulong[] Dependencies;
 
 #if UNITY_EDITOR
-        
-#if PARAMETERS_TRI_INSPECTOR
-        [TriInspector.Button]
-#endif
-        public void PrepareFormula()
+
+        public void Prepare(ParameterData required)
         {
+            if (string.IsNullOrEmpty(_formula) == true)
+            {
+                _usages = null;
+                Descriptions = null;
+                Dependencies = null;
+                return;
+            }
+
+            Dependencies = _elements.Select(x => x.ParameterData.Id).ToArray();
+            _usages = ParameterBuilderUsagesFactory.instance.Build(required, _elements);
+            
             var elementsMap = _elements.ToDictionary(x => x.ShortName, x => x.ParameterData.Id);
             var result = new List<HashedFormulaElement>();
 

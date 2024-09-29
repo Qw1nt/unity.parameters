@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Parameters.Runtime.CalculationFormulas
 {
+#if UNITY_EDITOR
     [Serializable]
     public class CalculationFormulaElement
     {
@@ -23,4 +24,5 @@ namespace Parameters.Runtime.CalculationFormulas
             get => _shortName;
         }
     }
+#endif
 }

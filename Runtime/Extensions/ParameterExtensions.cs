@@ -5,15 +5,15 @@ namespace Parameters.Runtime.Extensions
 {
     public static class ParameterExtensions
     {
-        public static ObservableParameter AsObservable(this Parameter parameter)
+        public static ObservableParameter AsObservable(this ComplexParameter complexParameter)
         {
-            return new ObservableParameter(parameter);
+            return new ObservableParameter(complexParameter);
         }      
         
-        public static ObservableParameter<T> AsObservable<T>(this Parameter parameter, T data) 
+        public static ObservableParameter<T> AsObservable<T>(this ComplexParameter complexParameter, T data) 
             where T : class
         {
-            return new ObservableParameter<T>(parameter, data);
+            return new ObservableParameter<T>(complexParameter, data);
         }
     }
 }
