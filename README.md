@@ -13,7 +13,7 @@
 
 ## Установка
 
-Через <b>.unitypackage</b>
+Через <b>[.unitypackage](https://github.com/Qw1nt/unity.parameters/releases/latest/download/unity.parameters.unitypackage)</b>
 
 ## Основное
 
@@ -169,7 +169,7 @@ namespace Runtime
 
 ### Формулы
 
-Формула состоит из нескольких чатсей: 
+Формула состоит из нескольких частей: 
 1) `Elements` - параметры, влияющие на расчёт,
 2) `Formula` - выражение,
 3) `Descriptions` - результат разбора выражени в пошаговые операции,
