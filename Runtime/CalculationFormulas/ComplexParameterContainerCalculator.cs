@@ -42,8 +42,8 @@ namespace Parameters.Runtime.CalculationFormulas
 
                 var formulaResultValue = parameter.Formula[^1].CalculatedValue;
 
-                parameter.CalculatedFlat.CleanValue += formulaResultValue;
-                parameter.CalculatedFlat.ParentModifiedValue += formulaResultValue;
+                parameter.CalculatedFlat.CleanValue = formulaResultValue;
+                parameter.CalculatedFlat.ParentModifiedValue = formulaResultValue;
             }
 
             container.CalculationBuffer.Clear();

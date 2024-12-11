@@ -10,7 +10,7 @@ namespace Parameters.Runtime.CalculationFormulas
         public uint Weight;
         public int Position;
         
-        public ulong ParameterId;
+        public int ParameterId;
         public float SimpleValue;
 
         public ulong Left;

@@ -13,8 +13,8 @@ namespace Parameters.Runtime.CalculationFormulas
         public int LeftIndex;
         public int RightIndex;
         
-        public ulong LeftParameterId;
-        public ulong RightParameterId;
+        public int LeftParameterId;
+        public int RightParameterId;
         
         public float SimpleLeft;
         public float SimpleRight;

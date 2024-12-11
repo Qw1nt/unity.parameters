@@ -92,9 +92,9 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                              [ParameterInitSelf("{{typeName}}"), Serializable]
                              public class {{typeName}}Initializer : IParameterStaticIdSetter
                              {
-                                public ulong Id { get; }
+                                public int Id { get; }
                                 
-                                public void SetStaticId(ulong id)
+                                public void SetStaticId(int id)
                                 {
                                     {{type}}.StaticId = new StaticId(id);
                                 }

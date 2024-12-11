@@ -5,7 +5,7 @@ namespace Parameters.Runtime.Interfaces
 {
     public interface IParameterFactory
     {
-        ulong Id { get; }
+        int Id { get; }
         
         ComplexParameter CreateParameter(ComplexParameterContainer container);
 

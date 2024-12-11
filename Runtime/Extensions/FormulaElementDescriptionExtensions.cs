@@ -10,7 +10,7 @@ namespace Parameters.Runtime.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Calculate(this ref FormulaElementDescription element,
             ref FormulaElementDescription[] descriptions,
-            ulong targetId,
+            int targetId,
             ComplexParameterContainer container)
         {
             var left = default(float);

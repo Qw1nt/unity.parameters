@@ -21,7 +21,7 @@ namespace Parameters.Runtime.CalculationFormulas
 #endif
 
         [ReadOnly] public FormulaElementDescription[] Descriptions;
-        [ReadOnly] public ulong[] Dependencies;
+        [ReadOnly] public int[] Dependencies;
 
 #if UNITY_EDITOR
 
@@ -32,9 +32,15 @@ namespace Parameters.Runtime.CalculationFormulas
                 _usages = null;
                 Descriptions = null;
                 Dependencies = null;
+                _elements.Clear();
                 return;
             }
 
+            if (_formula.Contains("value") == true)
+            {
+                
+            }
+                
             Dependencies = _elements.Select(x => x.ParameterData.Id).ToArray();
             _usages = ParameterBuilderUsagesFactory.instance.Build(required, _elements);
             

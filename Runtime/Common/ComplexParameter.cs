@@ -7,7 +7,7 @@ namespace Parameters.Runtime.Common
 {
     public class ComplexParameter : IReadOnlyParameter
     {
-        public readonly ulong Id;
+        public readonly int Id;
 
         internal float Flat;
         internal float Percent;
@@ -15,14 +15,14 @@ namespace Parameters.Runtime.Common
         internal readonly ComplexParameterContainer Container;
 
         internal FormulaElementDescription[] Formula;
-        internal ulong[] Dependencies;
+        internal int[] Dependencies;
         
         internal CalculatedValue CalculatedFlat;
         internal CalculatedValue CalculatedPercent;
 
         internal SwapList<CrateUpdateSubscriberBase> Subscribers;
 
-        internal ComplexParameter(ulong id, FormulaElementDescription[] formula, ulong[] dependencies, ComplexParameterContainer container)
+        internal ComplexParameter(int id, FormulaElementDescription[] formula, int[] dependencies, ComplexParameterContainer container)
         {
             Id = id;
 

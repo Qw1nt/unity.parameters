@@ -2,10 +2,10 @@
 {
     internal readonly struct StaticId
     {
-        public readonly ulong Value;
+        public readonly int Value;
         public readonly bool HasValue;
 
-        public StaticId(ulong value)
+        public StaticId(int value)
         {
             Value = value;
             HasValue = true;

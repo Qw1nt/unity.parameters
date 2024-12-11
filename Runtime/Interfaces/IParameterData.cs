@@ -4,7 +4,7 @@ namespace Parameters.Runtime.Interfaces
 {
     public interface IParameterData
     {
-        ulong Id { get; }
+        int Id { get; }
 
         CrateType Type { get; }
         

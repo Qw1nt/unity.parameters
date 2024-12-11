@@ -28,11 +28,11 @@ namespace Parameters.Runtime.Common
         private string CrateName => _parameter?.DebugName;
 #endif
 
-        public ulong Id => _parameter.Id;
+        public int Id => _parameter.Id;
 
         [ReadOnly] public FormulaElementDescription[] Formula => _formula.Descriptions;
 
-        [ReadOnly] public ulong[] Dependencies => _formula.Dependencies;
+        [ReadOnly] public int[] Dependencies => _formula.Dependencies;
 
 #if UNITY_EDITOR
         internal void PrepareFormula()

@@ -10,13 +10,13 @@ namespace Parameters.Runtime.Common
         public readonly IParameterContainerHolder Holder;
         public readonly ComplexParameterContainer Parent;
         
-        private readonly Dictionary<ulong, ComplexParameter> _map = new(8);
-        private readonly Dictionary<ulong, SwapList<ComplexParameter>> _dependenciesMap = new(4); // parameter -> dependents 
+        private readonly Dictionary<int, ComplexParameter> _map = new(8);
+        private readonly Dictionary<int, SwapList<ComplexParameter>> _dependenciesMap = new(4); // parameter -> dependents 
         private readonly Queue<ComplexParameterContainer> _childQueue = new(2);
         private readonly SwapList<ComplexParameterContainer> _childBuffer = new(2);
 
         internal readonly SwapList<ComplexParameter> Parameters;
-        internal readonly HashSet<ulong> CalculationBuffer;
+        internal readonly HashSet<int> CalculationBuffer;
 
         public readonly SwapList<ComplexParameterContainer> Children = new();
 
@@ -26,7 +26,7 @@ namespace Parameters.Runtime.Common
             Holder = holder;
             Parent = parent;
             Parameters = new SwapList<ComplexParameter>(parameters.Count);
-            CalculationBuffer = new HashSet<ulong>(parameters.Count);
+            CalculationBuffer = new HashSet<int>(parameters.Count);
 
             foreach (var data in parameters)
             {
@@ -122,13 +122,13 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Has(ulong id)
+        public bool Has(int id)
         {
             return _map.ContainsKey(id);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ComplexParameter Get(ulong parameterId)
+        public ComplexParameter Get(int parameterId)
         {
             if (Has(parameterId) == true)
                 return _map[parameterId];
@@ -143,7 +143,7 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGet(ulong id, out ComplexParameter result, bool onlyInSelf = false)
+        public bool TryGet(int id, out ComplexParameter result, bool onlyInSelf = false)
         {
             result = default;
 

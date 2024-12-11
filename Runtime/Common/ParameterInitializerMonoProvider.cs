@@ -28,7 +28,7 @@ namespace Parameters.Runtime.Common
                 assets.Add(asset);
             }
 
-            _parameters = assets.Where(x => x.Id != 0UL && x.Data != null).ToArray();
+            _parameters = assets.Where(x => x.Id != 0 && x.Data != null).ToArray();
         }
 #endif
     }

@@ -5,10 +5,10 @@ namespace Parameters.Runtime.Interfaces
 {
     public interface IParameterContainer : IDisposable
     {
-        bool Has(ulong id);
+        bool Has(int id);
 
-        ComplexParameter Get(ulong id);
+        ComplexParameter Get(int id);
 
-        bool TryGet(ulong id, out ComplexParameter result, bool onlyInSelf = false);
+        bool TryGet(int id, out ComplexParameter result, bool onlyInSelf = false);
     }
 }

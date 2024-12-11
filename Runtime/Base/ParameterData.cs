@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Cysharp.Threading.Tasks;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Interfaces;
@@ -8,6 +7,10 @@ using UnityEngine;
 
 #if PARAMETERS_UINITY_LOCALIZATION
 using UnityEngine.Localization;
+#endif
+
+#if PARAMETERS_UNITASK
+using Cysharp.Threading.Tasks;
 #endif
 
 namespace Parameters.Runtime.Base
@@ -33,7 +36,7 @@ namespace Parameters.Runtime.Base
         [SerializeField, SerializeReference, HideInInspector]
         public object Data;
 
-        public ulong Id => _id;
+        public int Id => _id;
 
         public CrateType Type => _type;
 
@@ -55,7 +58,7 @@ namespace Parameters.Runtime.Base
             return Id == complexParameterRef.Id;
         }
 
-        public void SetStaticId(ulong id)
+        public void SetStaticId(int id)
         {
             ((IParameterStaticIdSetter)Data).SetStaticId(_id);
         }
@@ -67,7 +70,7 @@ namespace Parameters.Runtime.Base
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ComplexParameter CreateParameter(ComplexParameterContainer container, FormulaElementDescription[] formula, ulong[] dependencies)
+        public ComplexParameter CreateParameter(ComplexParameterContainer container, FormulaElementDescription[] formula, int[] dependencies)
         {
             return new ComplexParameter(_id, formula, dependencies, container);
         }

@@ -2,8 +2,8 @@
 {
     public interface IParameterStaticIdSetter
     {
-        public ulong Id { get; }
+        public int Id { get; }
         
-        void SetStaticId(ulong id);
+        void SetStaticId(int id);
     }
 }
