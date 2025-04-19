@@ -12,7 +12,7 @@ namespace Parameters.Runtime.CalculationFormulas
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Calculate(ComplexParameterContainer container)
         {
-            if (container.CalculationBuffer.length == 0)
+            if (container.CalculationBuffer.Count == 0)
                 return;        
 
             foreach (var parameter in container.CalculationBuffer)

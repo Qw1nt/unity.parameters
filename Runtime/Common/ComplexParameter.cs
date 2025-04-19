@@ -90,7 +90,7 @@ namespace Parameters.Runtime.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryRecalculate()
         {
-            if (Container.CalculationBuffer.Has(Id) == false)
+            if (Container.CalculationBuffer.Contains(Id) == false)
                 return;        
             
             ComplexParameterContainerCalculator.Calculate(Container);
