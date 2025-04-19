@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Parameters.Runtime.Base;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace Parameters.Runtime.Common
@@ -8,27 +7,25 @@ namespace Parameters.Runtime.Common
     [DefaultExecutionOrder(-1100)]
     public class ParameterInitializerMonoProvider : MonoBehaviour
     {
-        [SerializeField] private ParameterData[] _parameters;
+        [SerializeField] private ParameterDatabase _database;
 
         private void Awake()
         {
-            ParameterInitializer.Initialize(_parameters);
+            ParameterInitializer.Initialize(_database.GetValidRecordsWithAlloc());
         }
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            var assets = new List<ParameterData>();
-            var guids = UnityEditor.AssetDatabase.FindAssets($"t:{nameof(ParameterData).ToLower()}");
+            if (_database != null)
+                return;
 
-            foreach (var guid in guids)
-            {
-                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<ParameterData>(path);
-                assets.Add(asset);
-            }
+            var guids = AssetDatabase.FindAssets($"t:{nameof(ParameterDatabase)}");
 
-            _parameters = assets.Where(x => x.Id != 0 && x.Data != null).ToArray();
+            if (guids.Length > 1 || guids.Length == 0)
+                throw new Exception();
+
+            _database = AssetDatabase.LoadAssetAtPath<ParameterDatabase>(AssetDatabase.GUIDToAssetPath(guids[0]));
         }
 #endif
     }

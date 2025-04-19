@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Parameters.Runtime.Interfaces;
 
@@ -6,6 +7,13 @@ namespace Parameters.Runtime.Common
 {
     public class ParameterInitializer
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Initialize(List<ParameterInfo> infos)
+        {
+            foreach (var setter in infos)
+                setter.SetStaticId(setter.Id);
+        }  
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Initialize(IReadOnlyList<IParameterStaticIdSetter> setters)
         {

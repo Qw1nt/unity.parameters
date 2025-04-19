@@ -4,7 +4,7 @@ using Parameters.Runtime.Interfaces;
 
 namespace Parameters.Runtime.Extensions
 {
-    public static class DockerExtensions 
+    public static class ContainerExtensions 
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ComplexParameterContainer SafeGetDocker(this IParameterContainerHolder holder)

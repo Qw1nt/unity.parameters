@@ -87,6 +87,12 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                  {
                                     return ({{generatedType}})Ref.GetFlat();
                                  }   
+                                 
+                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                                 public static int GetStaticId()
+                                 {
+                                    return StaticId.Value;
+                                 }
                              }
                              
                              [ParameterInitSelf("{{typeName}}"), Serializable]

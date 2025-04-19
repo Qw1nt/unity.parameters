@@ -9,10 +9,10 @@ namespace Parameters.Runtime.CalculationFormulas
     [Serializable]
     public class CalculationFormulaElement
     {
-        [SerializeField] private ParameterData _parameter;
+        [SerializeField] private ParameterData1 _parameter;
         [SerializeField] private string _shortName;
 
-        public ParameterData ParameterData
+        public ParameterData1 ParameterData
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _parameter;

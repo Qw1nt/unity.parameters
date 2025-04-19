@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Parameters.Editor.Extensions;
 using Parameters.Runtime.Attributes;
 using UnityEditor;
 
-namespace Parameters.Editor
+namespace Parameters.Editor.Common
 {
     public class EditorParametersStorage
     {

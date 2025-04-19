@@ -16,12 +16,10 @@ using Cysharp.Threading.Tasks;
 namespace Parameters.Runtime.Base
 {
     [CreateAssetMenu(menuName = "Parameters/Parameter Data")]
-    public partial class ParameterData : ScriptableObject, IParameterFactory, IParameterStaticIdSetter, IParameterData
+    public partial class ParameterData1 : ScriptableObject, IParameterFactory, IParameterStaticIdSetter, IParameterData
     {
         [SerializeField] private Id _id;
-
-        [Space] [SerializeField] private CrateType _type;
-
+        
 #if PARAMETERS_UINITY_LOCALIZATION
         [Space] [SerializeField] private LocalizedString _name;
         [SerializeField] private LocalizedString _measurement;
@@ -37,9 +35,7 @@ namespace Parameters.Runtime.Base
         public object Data;
 
         public int Id => _id;
-
-        public CrateType Type => _type;
-
+        
 #if PARAMETERS_UINITY_LOCALIZATION
         public LocalizedString Measurement => _measurement;
 #endif

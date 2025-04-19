@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
-using UnityEngine;
 
 namespace Parameters.Runtime.Extensions
 {

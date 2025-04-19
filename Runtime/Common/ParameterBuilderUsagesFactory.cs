@@ -11,7 +11,7 @@ namespace Parameters.Runtime.Common
     {
         [SerializeField] private List<CalculationFormulaElement> _elements;
         
-        public List<CalculationFormulaElement> Build(ParameterData required, List<CalculationFormulaElement> other)
+        public List<CalculationFormulaElement> Build(ParameterData1 required, List<CalculationFormulaElement> other)
         {
             var serializedObject = new SerializedObject(this);
             var array = serializedObject.FindProperty(nameof(_elements));
@@ -28,7 +28,7 @@ namespace Parameters.Runtime.Common
             return _elements;
         }
 
-        private void SetupElement(SerializedProperty element, ParameterData reference, string shortName)
+        private void SetupElement(SerializedProperty element, ParameterData1 reference, string shortName)
         {
             element.FindPropertyRelative("_parameter").objectReferenceValue = reference;
             element.FindPropertyRelative("_shortName").stringValue = shortName;

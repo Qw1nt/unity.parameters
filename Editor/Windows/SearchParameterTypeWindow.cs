@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Parameters.Editor.Common;
 using Parameters.Runtime.Base;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-namespace Parameters.Editor
+namespace Parameters.Editor.Windows
 {
     public class SearchParameterTypeWindow : ScriptableObject, ISearchWindowProvider
     {
-        private ParameterData _target;
+        private ParameterData1 _target;
         private Action<Type> _onSelectCallback;
 
         public void SetSelectCallback(Action<Type> onSelectCallback)

@@ -15,7 +15,7 @@ namespace Parameters.Runtime.Common
 #if UNITY_EDITOR
         [Title("$" + nameof(CrateName))]
 #endif
-        [SerializeField] private ParameterData _parameter;
+        [SerializeField] private ParameterData1 _parameter;
         [InfoBox("Reserved name for use in formula - value")]
 
         [Space] [SerializeField] private bool _withDefaultValue;
@@ -30,10 +30,20 @@ namespace Parameters.Runtime.Common
 
         public int Id => _parameter.Id;
 
-        [ReadOnly] public FormulaElementDescription[] Formula => _formula.Descriptions;
-
-        [ReadOnly] public int[] Dependencies => _formula.Dependencies;
-
+        [ReadOnly]
+        public FormulaElementDescription[] Formula
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _formula.Descriptions;
+        }
+        
+        [ReadOnly]
+        public int[] Dependencies
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _formula.Dependencies; 
+        }
+        
 #if UNITY_EDITOR
         internal void PrepareFormula()
         {

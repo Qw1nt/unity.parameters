@@ -9,6 +9,7 @@ namespace Parameters.Runtime.Common
     [Serializable]
     public class ComplexParameterContainerBuilder
     {
+        [SerializeField] private TestEditor _te;
         [SerializeField] private ParameterBuilder[] _parameters;
 
 #if UNITY_EDITOR

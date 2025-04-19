@@ -1,20 +1,22 @@
 ﻿using System;
+using Parameters.Editor.Extensions;
+using Parameters.Editor.Windows;
 using Parameters.Runtime.Base;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-namespace Parameters.Editor
+namespace Parameters.Editor.Inspectors
 {
-    [CustomEditor(typeof(ParameterData))]
+    [CustomEditor(typeof(ParameterData1))]
     public class ParameterCrateDataCustomInspector : UnityEditor.Editor
     {
         private string _selectedTypeName;
-        private ParameterData _data;
+        private ParameterData1 _data;
 
         private void OnEnable()
         {
-            _data = (ParameterData)target;
+            _data = (ParameterData1)target;
             TrySetSelectedTypeName();
         }
 

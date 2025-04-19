@@ -5,8 +5,6 @@ namespace Parameters.Runtime.Interfaces
     public interface IParameterData
     {
         int Id { get; }
-
-        CrateType Type { get; }
         
         public bool InvertDisplayColors { get; }
         
