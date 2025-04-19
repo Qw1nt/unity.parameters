@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Parameters.Runtime.Collections;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Extensions;
 
@@ -8,10 +9,11 @@ namespace Parameters.Runtime.CalculationFormulas
     {
         private const float OneHundredPercent = 1f;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Calculate(ComplexParameterContainer container)
         {
-            if (container.CalculationBuffer.Count == 0)
-                return;
+            if (container.CalculationBuffer.length == 0)
+                return;        
 
             foreach (var parameter in container.CalculationBuffer)
             {

@@ -10,23 +10,24 @@ namespace Parameters.Runtime.Common
         public readonly IParameterContainerHolder Holder;
         public readonly ComplexParameterContainer Parent;
         
-        private readonly Dictionary<int, ComplexParameter> _map = new(8);
-        private readonly Dictionary<int, SwapList<ComplexParameter>> _dependenciesMap = new(4); // parameter -> dependents 
+        private readonly IntHashMap<ComplexParameter> _map = new(8);
+        private readonly IntHashMap<FastList<ComplexParameter>> _dependenciesMap = new(4); // parameter -> dependents 
         private readonly Queue<ComplexParameterContainer> _childQueue = new(2);
-        private readonly SwapList<ComplexParameterContainer> _childBuffer = new(2);
+        private readonly FastList<ComplexParameterContainer> _childBuffer = new(2);
 
-        internal readonly SwapList<ComplexParameter> Parameters;
-        internal readonly HashSet<int> CalculationBuffer;
-
-        public readonly SwapList<ComplexParameterContainer> Children = new();
+        internal readonly FastList<ComplexParameter> Parameters;
+        internal readonly IntHashSet CalculationBuffer;
+        
+        
+        public readonly FastList<ComplexParameterContainer> Children = new();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameterContainer(IParameterContainerHolder holder, IReadOnlyList<IParameterFactory> parameters, ComplexParameterContainer parent = null)
         {
             Holder = holder;
             Parent = parent;
-            Parameters = new SwapList<ComplexParameter>(parameters.Count);
-            CalculationBuffer = new HashSet<int>(parameters.Count);
+            Parameters = new FastList<ComplexParameter>(parameters.Count);
+            CalculationBuffer = new IntHashSet(parameters.Count - 1);
 
             foreach (var data in parameters)
             {
@@ -34,7 +35,7 @@ namespace Parameters.Runtime.Common
 
                 instance.Formula = data.Formula;
                 
-                _map.Add(instance.Id, instance);
+                _map.Add(instance.Id, instance, out _);
                 Parameters.Add(instance);
                 CalculationBuffer.Add(instance.Id);
             }
@@ -46,10 +47,10 @@ namespace Parameters.Runtime.Common
 
                 foreach (var dependent in parameter.Dependencies)
                 {
-                    if(_dependenciesMap.ContainsKey(dependent) == false)
-                        _dependenciesMap.Add(dependent, new SwapList<ComplexParameter>(4));
+                    if(_dependenciesMap.Has(dependent) == false)
+                        _dependenciesMap.Add(dependent, new FastList<ComplexParameter>(3), out _);
                     
-                    _dependenciesMap[dependent].Add(parameter);
+                    _dependenciesMap.GetValueByKey(dependent).Add(parameter);
                 }
             }
             
@@ -83,7 +84,7 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddChild(SwapList<ComplexParameterContainer> children)
+        private void AddChild(FastList<ComplexParameterContainer> children)
         {
             Children.AddRange(children);
             Parent?.AddChild(children);
@@ -95,10 +96,10 @@ namespace Parameters.Runtime.Common
             var children = child.Children;
             Children.Remove(child);
             
-            var length = children.Length;
+            var length = children.length;
 
             for (int i = 0; i < length; i++)
-                Children.Remove(children.Items[i]);
+                Children.Remove(children.data[i]);
             
             Parent?.RemoveChild(child);
         }
@@ -109,32 +110,32 @@ namespace Parameters.Runtime.Common
             CalculationBuffer.Add(complexParameter.Id);
             complexParameter.NotifySubscribers();
 
-            if (_dependenciesMap.ContainsKey(complexParameter.Id) == false)
+            if (_dependenciesMap.Has(complexParameter.Id) == false)
                 return;
 
-            var dependencies = _dependenciesMap[complexParameter.Id];
+            var dependencies = _dependenciesMap.GetValueByKey(complexParameter.Id);
 
             foreach (var dependency in dependencies)
             {
                 CalculationBuffer.Add(dependency.Id);
-                _map[dependency.Id].NotifySubscribers();
+                _map.GetValueByKey(dependency.Id).NotifySubscribers();
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Has(int id)
         {
-            return _map.ContainsKey(id);
+            return _map.Has(id);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameter Get(int parameterId)
         {
             if (Has(parameterId) == true)
-                return _map[parameterId];
+                return _map.GetValueByKey(parameterId);
 
             if (Parent != null && Parent.Has(parameterId) == true)
-                return Parent._map[parameterId];
+                return Parent._map.GetValueByKey(parameterId);
 
 #if UNITY_EDITOR
             throw new KeyNotFoundException($"Параметр с id {parameterId} не найден");
@@ -149,7 +150,7 @@ namespace Parameters.Runtime.Common
 
             if (Has(id) == true)
             {
-                result = _map[id];
+                result = _map.GetValueByKey(id);
                 return true;
             }
 
@@ -159,7 +160,7 @@ namespace Parameters.Runtime.Common
             if (Parent == null || Parent.Has(id) == false)
                 return false;
 
-            result = Parent._map[id];
+            result = Parent._map.GetValueByKey(id);
             return true;
         }
 

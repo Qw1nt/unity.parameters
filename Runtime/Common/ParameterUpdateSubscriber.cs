@@ -5,7 +5,7 @@ namespace Parameters.Runtime.Common
 {
     internal abstract class CrateUpdateSubscriberBase : IDisposable
     {
-        private readonly SwapList<CrateUpdateSubscriberBase> _storage;
+        private readonly FastList<CrateUpdateSubscriberBase> _storage;
 
         internal CrateUpdateSubscriberBase(ComplexParameter complexParameter)
         {

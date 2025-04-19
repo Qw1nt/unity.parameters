@@ -5,7 +5,7 @@ using System.Linq;
 using Parameters.Runtime.Base;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Extensions;
-// using TriInspector;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -16,12 +16,12 @@ namespace Parameters.Runtime.CalculationFormulas
     {
 #if UNITY_EDITOR
         [SerializeField] private List<CalculationFormulaElement> _elements;
-        /*[ReadOnly]*/ [SerializeField] private List<CalculationFormulaElement> _usages;
+        [ReadOnly] [SerializeField] private List<CalculationFormulaElement> _usages;
         [TextArea] [SerializeField] private string _formula;
 #endif
 
-        /*[ReadOnly]*/ public FormulaElementDescription[] Descriptions;
-        /*[ReadOnly]*/ public int[] Dependencies;
+        [ReadOnly] public FormulaElementDescription[] Descriptions;
+        [ReadOnly] public int[] Dependencies;
 
 #if UNITY_EDITOR
 

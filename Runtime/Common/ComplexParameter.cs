@@ -20,7 +20,7 @@ namespace Parameters.Runtime.Common
         internal CalculatedValue CalculatedFlat;
         internal CalculatedValue CalculatedPercent;
 
-        internal SwapList<CrateUpdateSubscriberBase> Subscribers;
+        internal FastList<CrateUpdateSubscriberBase> Subscribers;
 
         internal ComplexParameter(int id, FormulaElementDescription[] formula, int[] dependencies, ComplexParameterContainer container)
         {
@@ -90,9 +90,9 @@ namespace Parameters.Runtime.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryRecalculate()
         {
-            if (Container.CalculationBuffer.Contains(Id) == false)
-                return;
-
+            if (Container.CalculationBuffer.Has(Id) == false)
+                return;        
+            
             ComplexParameterContainerCalculator.Calculate(Container);
         }
         

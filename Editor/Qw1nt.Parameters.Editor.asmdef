@@ -1,7 +1,10 @@
 {
     "name": "Qw1nt.Parameters.Editor",
     "rootNamespace": "",
-    "references": ["GUID:65a10ae233ca90a488a4bc91861b7065"],
+    "references": [
+        "GUID:65a10ae233ca90a488a4bc91861b7065",
+        "GUID:7be4600869ec09d4ca9a37d1dbfbf1a2"
+    ],
     "includePlatforms": [
         "Editor"
     ],
