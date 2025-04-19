@@ -32,6 +32,12 @@ namespace Parameters.Runtime.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void TryForceRecalculate()
+        {
+            TryRecalculate();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetCleanFlat()
         {
             TryRecalculate();

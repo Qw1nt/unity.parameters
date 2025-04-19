@@ -81,12 +81,8 @@ namespace Parameters.Editor.Windows
                 var initializerType = initializer.GetType();
 
                 if (CachedTypes.Contains(initializerType) == true)
-                {
-                    _sourceItems.Add(new ParameterSetupSerializeInfo(arrayElement));
                     continue;
-                }
 
-                _sourceItems.Add(new ParameterSetupSerializeInfo(arrayElement));
                 CachedTypes.Add(initializerType);
             }
 
@@ -103,10 +99,12 @@ namespace Parameters.Editor.Windows
                 var initializer = element.FindPropertyRelative("Initializer");
                 initializer.managedReferenceValue = Activator.CreateInstance(initializerType);
 
-                _sourceItems.Add(new ParameterSetupSerializeInfo(element));
                 CachedTypes.Add(initializerType);
             }
 
+            for (int i = 0; i < values.arraySize; i++)
+                _sourceItems.Add(new ParameterSetupSerializeInfo(values.GetArrayElementAtIndex(i)));
+            
             _serializedDatabase.ApplyModifiedProperties();
         }
 

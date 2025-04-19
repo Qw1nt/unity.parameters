@@ -141,6 +141,18 @@ namespace Parameters.Runtime.Common
             throw new KeyNotFoundException($"Параметр с id {parameterId} не найден");
 #endif
             return default;
+        }        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ComplexParameter SafeGet(int parameterId)
+        {
+            if (Has(parameterId) == true)
+                return _map[parameterId];
+
+            if (Parent != null && Parent.Has(parameterId) == true)
+                return Parent._map[parameterId];
+
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

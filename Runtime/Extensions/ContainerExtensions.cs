@@ -13,7 +13,7 @@ namespace Parameters.Runtime.Extensions
         }   
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ComplexParameterContainer GetDocker(this IParameterContainerHolder holder)
+        public static ComplexParameterContainer GetContainer(this IParameterContainerHolder holder)
         {
             return ComplexParameterContainerStorage.GetSingle(holder.GetInstanceID());
         }
