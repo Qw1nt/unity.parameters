@@ -3,9 +3,10 @@ using System.Runtime.CompilerServices;
 using Parameters.Runtime.Base;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Interfaces;
-using TriInspector;
+using Qw1nt.SelfIds.Runtime;
+using SaintsField;
+using SaintsField.Playa;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.Common
 {
@@ -13,16 +14,20 @@ namespace Parameters.Runtime.Common
     public class ParameterBuilder : IParameterFactory
     {
 #if UNITY_EDITOR
-        [Title("$" + nameof(CrateName))]
+        [Layout("$" + nameof(CrateName), ELayout.Title | ELayout.TitleOut)]
+
+        // [Title("$" + nameof(CrateName))]
 #endif
         [SerializeField] private ParameterData1 _parameter;
+        [SerializeField] private int _parameterId;
+        
         [InfoBox("Reserved name for use in formula - value")]
 
         [Space] [SerializeField] private bool _withDefaultValue;
-        [SerializeField, ShowIf(nameof(_withDefaultValue)), Indent] private float _flatValue;
+        [SerializeField, ShowIf(nameof(_withDefaultValue))] private float _flatValue;
         [SerializeField] private float _percentValue = 1f;
 
-        [PropertySpace(10f)] [SerializeField] private CalculationFormula _formula;
+        [Space(10f)] [SerializeField] private CalculationFormula _formula;
 
 #if UNITY_EDITOR
         private string CrateName => _parameter?.DebugName;
@@ -30,14 +35,14 @@ namespace Parameters.Runtime.Common
 
         public int Id => _parameter.Id;
 
-        [ReadOnly]
+        // [ReadOnly]
         public FormulaElementDescription[] Formula
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _formula.Descriptions;
         }
         
-        [ReadOnly]
+        // [ReadOnly]
         public int[] Dependencies
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

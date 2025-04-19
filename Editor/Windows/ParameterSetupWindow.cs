@@ -22,9 +22,6 @@ namespace Parameters.Editor.Windows
         private readonly List<ParameterSetupSerializeInfo> _sourceItems = new();
         private readonly List<ParameterSetupSerializeInfo> _listViewItems = new();
 
-        private ParameterDatabase _database;
-        private SerializedObject _serializedDatabase;
-
         private TextField _searchField;
         private ListView _listView;
 
@@ -61,51 +58,11 @@ namespace Parameters.Editor.Windows
 
         public void OnEnable()
         {
-            if (TryLoadDatabase() == false)
+            if(DatabaseUtils.instance.IsReady == false)
                 return;
-
-            var allInitializers = TypeCache.GetTypesWithAttribute<ParameterInitSelfAttribute>();
-            var alphabetSorted = allInitializers.OrderBy(x => x.Name).ToList();
-
-            var values = _serializedDatabase.FindProperty("_values");
-            CachedTypes.Clear();
-
-            for (int i = 0; i < values.arraySize; i++)
-            {
-                var arrayElement = values.GetArrayElementAtIndex(i);
-                var initializer = arrayElement.FindPropertyRelative("Initializer").managedReferenceValue;
-
-                if (initializer == null)
-                    continue;
-
-                var initializerType = initializer.GetType();
-
-                if (CachedTypes.Contains(initializerType) == true)
-                    continue;
-
-                CachedTypes.Add(initializerType);
-            }
-
-            for (int i = 0; i < alphabetSorted.Count; i++)
-            {
-                var initializerType = alphabetSorted[i];
-
-                if (CachedTypes.Contains(initializerType) == true)
-                    continue;
-
-                values.InsertArrayElementAtIndex(i);
-                var element = values.GetArrayElementAtIndex(i);
-
-                var initializer = element.FindPropertyRelative("Initializer");
-                initializer.managedReferenceValue = Activator.CreateInstance(initializerType);
-
-                CachedTypes.Add(initializerType);
-            }
-
-            for (int i = 0; i < values.arraySize; i++)
-                _sourceItems.Add(new ParameterSetupSerializeInfo(values.GetArrayElementAtIndex(i)));
-            
-            _serializedDatabase.ApplyModifiedProperties();
+ 
+            _sourceItems.Clear();
+            _sourceItems.AddRange(DatabaseUtils.instance.GetInfos());
         }
 
         private void UpdateViewItems(string nameFilter = null)
@@ -148,7 +105,7 @@ namespace Parameters.Editor.Windows
                    first.IndexOf(second, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        private bool TryLoadDatabase()
+        /*private bool TryLoadDatabase()
         {
             var databases = AssetDatabase.FindAssets($"t:{nameof(ParameterDatabase)}");
 
@@ -168,7 +125,7 @@ namespace Parameters.Editor.Windows
             _serializedDatabase = new SerializedObject(_database);
 
             return true;
-        }
+        }*/
 
         private VisualElement MakeListItem()
         {

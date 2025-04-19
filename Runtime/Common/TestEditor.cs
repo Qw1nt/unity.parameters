@@ -2,7 +2,7 @@
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Extensions;
 using Parameters.Runtime.Interfaces;
-using TriInspector;
+using SaintsField.Playa;
 using UnityEngine;
 
 namespace Parameters.Runtime.Common
@@ -15,7 +15,7 @@ namespace Parameters.Runtime.Common
 
         [SerializeField] private float _testValue;
 
-        [Button]
+        [Button("Bas")]
         public void Calc()
         {
             var cont = GetComponent<IParameterContainerHolder>().GetContainer();

@@ -8,11 +8,14 @@ namespace Parameters.Editor.Common
         public ParameterSetupSerializeInfo(SerializedProperty item)
         {
             Id = item.FindPropertyRelative("_id");
+            IdHash = Id.FindPropertyRelative("_hash");
             Initializer = item.FindPropertyRelative("Initializer");
             FriendlyName = item.FindPropertyRelative("_friendlyName");
         }
         
         public SerializedProperty Id { get; }
+        
+        public SerializedProperty IdHash { get; }
         
         public SerializedProperty Initializer { get; }
         
