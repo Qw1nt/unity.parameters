@@ -15,16 +15,15 @@ namespace Parameters.Runtime.Common
     {
 #if UNITY_EDITOR
         [Layout("$" + nameof(CrateName), ELayout.Title | ELayout.TitleOut)]
-
-        // [Title("$" + nameof(CrateName))]
 #endif
-        [SerializeField] private ParameterData1 _parameter;
-        [SerializeField] private int _parameterId;
-        
-        [InfoBox("Reserved name for use in formula - value")]
+        [SerializeField]
+        private ParameterData1 _parameter;
 
-        [Space] [SerializeField] private bool _withDefaultValue;
-        [SerializeField, ShowIf(nameof(_withDefaultValue))] private float _flatValue;
+        [SerializeField] private ParameterIdProvider _parameterId;
+
+        [InfoBox("Reserved name for use in formula - value")] [SerializeField]
+        private float _flatValue;
+
         [SerializeField] private float _percentValue = 1f;
 
         [Space(10f)] [SerializeField] private CalculationFormula _formula;
@@ -33,22 +32,20 @@ namespace Parameters.Runtime.Common
         private string CrateName => _parameter?.DebugName;
 #endif
 
-        public int Id => _parameter.Id;
+        public int Id => (int)_parameterId;
 
-        // [ReadOnly]
         public FormulaElementDescription[] Formula
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _formula.Descriptions;
         }
-        
-        // [ReadOnly]
+
         public int[] Dependencies
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _formula.Dependencies; 
+            get => _formula.Dependencies;
         }
-        
+
 #if UNITY_EDITOR
         internal void PrepareFormula()
         {
@@ -61,9 +58,7 @@ namespace Parameters.Runtime.Common
         {
             var instance = _parameter.CreateParameter(container, _formula.Descriptions, _formula.Dependencies);
 
-            if (_withDefaultValue == true)
-                instance.AddFlat(_flatValue);
-
+            instance.AddFlat(_flatValue);
             instance.AddPercent(_percentValue);
 
             return instance;

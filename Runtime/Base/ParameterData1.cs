@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Interfaces;
@@ -15,6 +16,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Parameters.Runtime.Base
 {
+    [Obsolete]
     [CreateAssetMenu(menuName = "Parameters/Parameter Data")]
     public partial class ParameterData1 : ScriptableObject, IParameterFactory, IParameterStaticIdSetter, IParameterData
     {

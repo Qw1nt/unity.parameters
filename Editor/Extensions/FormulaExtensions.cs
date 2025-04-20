@@ -1,48 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Parameters.Runtime.Base;
+using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Common;
-using Parameters.Runtime.Extensions;
-using SaintsField;
-using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEditor;
 
-namespace Parameters.Runtime.CalculationFormulas
+namespace Parameters.Editor.Extensions
 {
-    [Serializable]
-    internal class CalculationFormula
+    public static class FormulaExtensions
     {
-#if UNITY_EDITOR
-        [SerializeField] private List<CalculationFormulaElement> _elements;
-        [ReadOnly] [SerializeField] private List<CalculationFormulaElement> _usages;
-        [TextArea] [SerializeField] private string _formula;
-#endif
-
-        [ReadOnly] public FormulaElementDescription[] Descriptions;
-        [ReadOnly] public int[] Dependencies;
-
-#if UNITY_EDITOR
-        public void Prepare(ParameterData1 required)
+        public static void Prepare(SerializedProperty formulaProperty, int requiredId)
         {
-            if (string.IsNullOrEmpty(_formula) == true)
+            var formula = formulaProperty.FindPropertyRelative("_formula").stringValue;
+            var elements = formulaProperty.FindPropertyRelative("_elements");
+            var usages = formulaProperty.FindPropertyRelative("_usages");
+            var descriptions = formulaProperty.FindPropertyRelative("Descriptions");
+            var dependencies = formulaProperty.FindPropertyRelative("Dependencies");
+            
+            if (string.IsNullOrEmpty(formula) == true)
             {
-                _usages = null;
-                Descriptions = null;
-                Dependencies = null;
-                _elements.Clear();
+                elements.ClearArray();
+                usages.ClearArray();
+                descriptions.ClearArray();
+                dependencies.ClearArray();
+
                 return;
             }
 
-            if (_formula.Contains("value") == true)
+            if (formula.Contains("value") == true)
             {
-                
             }
-                
-            Dependencies = _elements.Select(x => x.ParameterData.Id).ToArray();
-            _usages = ParameterBuilderUsagesFactory.instance.Build(required, _elements);
             
+            dependencies.ClearArray();
+            
+            for (int i = 0; i < elements.arraySize; i++)
+            {
+                var element = elements.GetArrayElementAtIndex(i);
+                var idValue = element.FindPropertyRelative("_parameterIdProvider").FindPropertyRelative("_id");
+                
+                dependencies.InsertArrayElementAtIndex(0);
+                var dependency = dependencies.GetArrayElementAtIndex(0);
+                dependency.intValue = idValue.intValue;
+            }
+
+            formulaProperty.serializedObject.ApplyModifiedProperties();
+
+            /*_usages = ParameterBuilderUsagesFactory.instance.Build(requiredId, _elements);
+
             var elementsMap = _usages.ToDictionary(x => x.ShortName, x => x.ParameterData.Id);
             var result = new List<HashedFormulaElement>();
 
@@ -68,7 +73,8 @@ namespace Parameters.Runtime.CalculationFormulas
                 item.AdjustElementHash();
                 result.Add(item);
 
-                if (float.TryParse(item.Expression, NumberStyles.Float, CultureInfo.InvariantCulture, out var simpleValue) == true)
+                if (float.TryParse(item.Expression, NumberStyles.Float, CultureInfo.InvariantCulture,
+                        out var simpleValue) == true)
                     item.SimpleValue = simpleValue;
                 else if (elementsMap.TryGetValue(item.Expression, out var parameterId) == true)
                     item.ParameterId = parameterId;
@@ -172,10 +178,10 @@ namespace Parameters.Runtime.CalculationFormulas
                 rawDescriptions.Add(description);
             }
 
-            Descriptions = rawDescriptions.ToArray();
+            Descriptions = rawDescriptions.ToArray();*/
         }
 
-        private void SetCorrectRightReferences(List<HashedFormulaElement> operators, List<HashedFormulaElement> result)
+        /*private void SetCorrectRightReferences(List<HashedFormulaElement> operators, List<HashedFormulaElement> result)
         {
             for (int i = 0; i < operators.Count; i++)
             {
@@ -190,9 +196,9 @@ namespace Parameters.Runtime.CalculationFormulas
                     break;
                 }
             }
-        }
+        }*/
 
-        private int TryGetReferenceIndex(List<FormulaElementDescription> rawDescriptions,
+        private static int TryGetReferenceIndex(List<FormulaElementDescription> rawDescriptions,
             List<HashedFormulaElement> operators,
             HashedFormulaElement source,
             HashedFormulaElement element)
@@ -217,6 +223,5 @@ namespace Parameters.Runtime.CalculationFormulas
 
             return -1;
         }
-#endif
     }
 }

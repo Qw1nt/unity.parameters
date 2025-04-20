@@ -1,10 +1,19 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Parameters.Editor.Extensions
 {
     public static class VisualElementExtensions
     {
+        public static T Bind<T>(this T element, SerializedProperty property)
+            where T : IBindable
+        {
+            element.BindProperty(property);
+            return element;
+        }
+
         public static T AddTo<T>(this T element, VisualElement parent)
             where T : VisualElement
         {
@@ -30,6 +39,16 @@ namespace Parameters.Editor.Extensions
             where T : VisualElement
         {
             element.style.display = style;
+            return element;
+        }
+
+        public static T SwapDisplay<T>(this T element)
+            where T : VisualElement
+        {
+            element.style.display = element.style.display == DisplayStyle.None 
+                ? DisplayStyle.Flex 
+                : DisplayStyle.None;
+            
             return element;
         }
 
@@ -80,6 +99,17 @@ namespace Parameters.Editor.Extensions
             element.style.borderLeftWidth = width;
             element.style.borderRightWidth = width;
             element.style.borderTopWidth = width;
+
+            return element;
+        }  
+        
+        public static T BorderWidth<T>(this T element, float left, float right, float top, float bottom)
+            where T : VisualElement
+        {
+            element.style.borderLeftWidth = left;
+            element.style.borderRightWidth = right;
+            element.style.borderTopWidth = top;
+            element.style.borderBottomWidth = bottom;
 
             return element;
         }
