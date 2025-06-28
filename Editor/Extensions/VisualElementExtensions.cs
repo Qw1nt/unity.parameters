@@ -7,6 +7,20 @@ namespace Parameters.Editor.Extensions
 {
     public static class VisualElementExtensions
     {
+        public static T SetName<T>(this T element, string value)
+            where T : VisualElement
+        {
+            element.name = value;
+            return element;
+        }     
+             
+        public static T Enable<T>(this T element)
+            where T : VisualElement
+        {
+            element.enabledSelf = true;
+            return element;
+        }     
+        
         public static T Bind<T>(this T element, SerializedProperty property)
             where T : IBindable
         {
@@ -89,6 +103,20 @@ namespace Parameters.Editor.Extensions
             where T : VisualElement
         {
             element.style.marginTop = value;
+            return element;
+        }
+
+        public static T Width<T>(this T element, float value)
+            where T : VisualElement
+        {
+            element.style.width = value;
+            return element;
+        }
+        
+        public static T Height<T>(this T element, float value)
+            where T : VisualElement
+        {
+            element.style.height = value;
             return element;
         }
 

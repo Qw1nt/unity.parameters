@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 namespace Plugins.unity.parameters.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(ParameterIdProvider))]
-    public class ParameterIdProviderPropertyDrawer : PropertyDrawer
+    internal class ParameterIdProviderPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {

@@ -5,27 +5,27 @@ using Parameters.Runtime.Common;
 
 public class ComplexParameterDictionary
 {
-    private int[] keys;
-    private ComplexParameter[] values;
-    private byte[] occupied; // 0 = empty, 1 = occupied
-    private int capacity;
-    private int mask;
-    private int count;
+    private int[] _keys;
+    private ComplexParameter[] _values;
+    private byte[] _occupied; // 0 = empty, 1 = occupied
+    private int _capacity;
+    private int _mask;
+    private int _count;
 
-    private const float MAX_LOAD_FACTOR = 0.4f;
-    private const int MAX_RELOCATIONS = 32;
-
-    public int Count => count;
-
+    private const float MaxLoadFactor = 0.4f;
+    private const int MaxRelocations = 32;
+    
     public ComplexParameterDictionary(int initialCapacity = 16)
     {
-        if (initialCapacity < 1) initialCapacity = 16;
-        capacity = NextPowerOfTwo(initialCapacity);
-        mask = capacity - 1;
-        keys = new int[capacity];
-        values = new ComplexParameter[capacity];
-        occupied = new byte[capacity];
-        count = 0;
+        if (initialCapacity < 1) 
+            initialCapacity = 16;
+        
+        _capacity = NextPowerOfTwo(initialCapacity);
+        _mask = _capacity - 1;
+        _keys = new int[_capacity];
+        _values = new ComplexParameter[_capacity];
+        _occupied = new byte[_capacity];
+        _count = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -43,91 +43,102 @@ public class ComplexParameterDictionary
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int Hash1(int key)
     {
-        return (int)(((uint)key * 2654435761u) & (uint)mask);
+        return (int)(((uint)key * 2654435761u) & (uint)_mask);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int Hash2(int key)
     {
-        // Secondary hash: mix and mask
-        uint h = (uint)key * 40503u;
+        var h = (uint)key * 40503u;
+        
         h ^= h << 13;
         h ^= h >> 17;
-        return (int)(h & (uint)mask);
+        
+        return (int)(h & (uint)_mask);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(int key, ComplexParameter value)
     {
         if (ContainsKey(key))
             throw new ArgumentException($"Key {key} already exists.");
 
-        if (count + 1 > capacity * MAX_LOAD_FACTOR)
-            Resize(capacity * 2);
+        if (_count + 1 > _capacity * MaxLoadFactor)
+            Resize(_capacity * 2);
 
         if (TryPlace(key, value))
         {
-            count++;
+            _count++;
             return;
         }
 
-        int curKey = key;
-        ComplexParameter curVal = value;
-        int pos = Hash1(curKey);
-        for (int i = 0; i < MAX_RELOCATIONS; i++)
+        var curKey = key;
+        var curVal = value;
+        var pos = Hash1(curKey);
+        
+        for (int i = 0; i < MaxRelocations; i++)
         {
-            int evictedKey = keys[pos];
-            ComplexParameter evictedVal = values[pos];
-            keys[pos] = curKey;
-            values[pos] = curVal;
+            var evictedKey = _keys[pos];
+            var evictedVal = _values[pos];
+            
+            _keys[pos] = curKey;
+            _values[pos] = curVal;
 
             curKey = evictedKey;
             curVal = evictedVal;
             pos = (pos == Hash1(curKey)) ? Hash2(curKey) : Hash1(curKey);
 
-            if (occupied[pos] == 0)
-            {
-                keys[pos] = curKey;
-                values[pos] = curVal;
-                occupied[pos] = 1;
-                count++;
-                return;
-            }
+            if (_occupied[pos] != 0)
+                continue;
+            
+            _keys[pos] = curKey;
+            _values[pos] = curVal;
+            _occupied[pos] = 1;
+            _count++;
+            
+            return;
         }
 
-        Resize(capacity * 2);
+        Resize(_capacity * 2);
         Add(curKey, curVal);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool TryPlace(int key, ComplexParameter value)
     {
-        int i1 = Hash1(key);
-        if (occupied[i1] == 0)
+        var i1 = Hash1(key);
+        
+        if (_occupied[i1] == 0)
         {
-            keys[i1] = key;
-            values[i1] = value;
-            occupied[i1] = 1;
+            _keys[i1] = key;
+            _values[i1] = value;
+            _occupied[i1] = 1;
             return true;
         }
-        int i2 = Hash2(key);
-        if (occupied[i2] == 0)
+        
+        var i2 = Hash2(key);
+        
+        if (_occupied[i2] == 0)
         {
-            keys[i2] = key;
-            values[i2] = value;
-            occupied[i2] = 1;
+            _keys[i2] = key;
+            _values[i2] = value;
+            _occupied[i2] = 1;
             return true;
         }
+        
         return false;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool ContainsKey(int key)
     {
-        int i1 = Hash1(key);
-        if (occupied[i1] == 1 && keys[i1] == key)
+        var i1 = Hash1(key);
+        
+        if (_occupied[i1] == 1 && _keys[i1] == key)
             return true;
-        int i2 = Hash2(key);
-        return occupied[i2] == 1 && keys[i2] == key;
+        
+        var i2 = Hash2(key);
+        return _occupied[i2] == 1 && _keys[i2] == key;
     }
 
     public ComplexParameter this[int key]
@@ -136,25 +147,28 @@ public class ComplexParameterDictionary
         get
         {
             int i1 = Hash1(key);
-            if (occupied[i1] == 1 && keys[i1] == key)
-                return values[i1];
+            if (_occupied[i1] == 1 && _keys[i1] == key)
+                return _values[i1];
             int i2 = Hash2(key);
-            if (occupied[i2] == 1 && keys[i2] == key)
-                return values[i2];
+            if (_occupied[i2] == 1 && _keys[i2] == key)
+                return _values[i2];
             throw new KeyNotFoundException($"Key {key} not found.");
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set
         {
             if (ContainsKey(key))
             {
-                int i1 = Hash1(key);
-                if (occupied[i1] == 1 && keys[i1] == key)
+                var i1 = Hash1(key);
+                
+                if (_occupied[i1] == 1 && _keys[i1] == key)
                 {
-                    values[i1] = value;
+                    _values[i1] = value;
                     return;
                 }
-                int i2 = Hash2(key);
-                values[i2] = value;
+                
+                var i2 = Hash2(key);
+                _values[i2] = value;
             }
             else
             {
@@ -166,42 +180,45 @@ public class ComplexParameterDictionary
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Remove(int key)
     {
-        int i1 = Hash1(key);
-        if (occupied[i1] == 1 && keys[i1] == key)
+        var i1 = Hash1(key);
+        
+        if (_occupied[i1] == 1 && _keys[i1] == key)
         {
-            occupied[i1] = 0;
-            count--;
+            _occupied[i1] = 0;
+            _count--;
             return true;
         }
-        int i2 = Hash2(key);
-        if (occupied[i2] == 1 && keys[i2] == key)
-        {
-            occupied[i2] = 0;
-            count--;
-            return true;
-        }
-        return false;
+        
+        var i2 = Hash2(key);
+
+        if (_occupied[i2] != 1 || _keys[i2] != key) 
+            return false;
+        
+        _occupied[i2] = 0;
+        _count--;
+        return true;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Clear()
     {
-        Array.Clear(occupied, 0, capacity);
-        count = 0;
+        Array.Clear(_occupied, 0, _capacity);
+        _count = 0;
     }
 
     private void Resize(int newCapacity)
     {
-        var oldKeys = keys;
-        var oldVals = values;
-        var oldOcc = occupied;
-        int oldCap = capacity;
+        var oldKeys = _keys;
+        var oldVals = _values;
+        var oldOcc = _occupied;
+        var oldCap = _capacity;
 
-        capacity = NextPowerOfTwo(newCapacity);
-        mask = capacity - 1;
-        keys = new int[capacity];
-        values = new ComplexParameter[capacity];
-        occupied = new byte[capacity];
-        count = 0;
+        _capacity = NextPowerOfTwo(newCapacity);
+        _mask = _capacity - 1;
+        _keys = new int[_capacity];
+        _values = new ComplexParameter[_capacity];
+        _occupied = new byte[_capacity];
+        _count = 0;
 
         for (int i = 0; i < oldCap; i++)
         {

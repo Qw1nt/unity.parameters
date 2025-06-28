@@ -16,8 +16,7 @@ namespace Parameters.Runtime.Common
         private readonly FastList<ComplexParameterContainer> _childBuffer = new(2);
 
         internal readonly FastList<ComplexParameter> Parameters;
-        internal readonly FastIntHashSet CalculationBuffer;
-        
+        internal readonly IntHashSet CalculationBuffer;
         
         public readonly FastList<ComplexParameterContainer> Children = new();
 
@@ -27,7 +26,7 @@ namespace Parameters.Runtime.Common
             Holder = holder;
             Parent = parent;
             Parameters = new FastList<ComplexParameter>(parameters.Count);
-            CalculationBuffer = new FastIntHashSet(parameters.Count);
+            CalculationBuffer = new IntHashSet(parameters.Count);
 
             foreach (var data in parameters)
             {

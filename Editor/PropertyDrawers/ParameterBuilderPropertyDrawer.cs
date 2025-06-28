@@ -6,11 +6,11 @@ using UnityEngine.UIElements;
 namespace Parameters.Editor.Inspectors
 {
     [CustomPropertyDrawer(typeof(ParameterBuilder))]
-    public class ParameterBuilderPropertyDrawer : PropertyDrawer
+    internal class ParameterBuilderPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            return new ParameterBuilderCard(property);
+            return new ParameterBuilderCard().Bind(property);
         }
     }
 }

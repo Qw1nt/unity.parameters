@@ -17,8 +17,15 @@ namespace Parameters.Runtime.Common
         internal FormulaElementDescription[] Formula;
         internal int[] Dependencies;
         
-        internal CalculatedValue CalculatedFlat;
-        internal CalculatedValue CalculatedPercent;
+        /// <summary>
+        /// Хранит чистое и посчитанное плоские значения параметра
+        /// </summary>
+        public CalculatedValue CalculatedFlat;
+        
+        /// <summary>
+        /// Хранит чистое и посчитанное процентные значения параметра
+        /// </summary>
+        public CalculatedValue CalculatedPercent;
 
         internal FastList<CrateUpdateSubscriberBase> Subscribers;
 
@@ -30,45 +37,51 @@ namespace Parameters.Runtime.Common
             Dependencies = dependencies;
             Container = container;
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void TryForceRecalculate()
         {
-            TryRecalculate();
+            if (Container.CalculationBuffer.Has(Id) == false)
+                return;        
+            
+            ComplexParameterContainerCalculator.Calculate(Container);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetCleanFlat()
         {
-            TryRecalculate();
             return CalculatedFlat.CleanValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetFlat()
         {
-            TryRecalculate();
             return CalculatedFlat.ParentModifiedValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetCleanPercent()
         {
-            TryRecalculate();
             return CalculatedPercent.CleanValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetPercent()
         {
-            TryRecalculate();
             return CalculatedPercent.ParentModifiedValue;
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddFlat(float value)
         {
             Flat += value;
+
+            if(Subscribers != null)
+                NotifySubscribers();
+            
+            if (Container.CalculationBuffer.Has(Id) == true)
+                return;
+            
             Container.MarkDirty(this);
         }
 
@@ -78,7 +91,14 @@ namespace Parameters.Runtime.Common
             Flat -= value;
             Container.MarkDirty(this);
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetFlat(float value)
+        {
+            Flat = value;
+            Container.MarkDirty(this);
+        }  
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddPercent(float value)
         {
@@ -92,11 +112,25 @@ namespace Parameters.Runtime.Common
             Percent -= value;
             Container.MarkDirty(this);
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetPercent(float value)
+        {
+            Percent = value;
+            
+            if(Subscribers != null)
+                NotifySubscribers();
+            
+            if (Container.CalculationBuffer.Has(Id) == true)
+                return;
+            
+            Container.MarkDirty(this);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryRecalculate()
         {
-            if (Container.CalculationBuffer.Contains(Id) == false)
+            if (Container.CalculationBuffer.Has(Id) == false)
                 return;        
             
             ComplexParameterContainerCalculator.Calculate(Container);

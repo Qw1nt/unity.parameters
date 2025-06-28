@@ -13,11 +13,11 @@ namespace Parameters.Runtime.Common
     [Serializable]
     public class ParameterBuilder : IParameterFactory
     {
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
         [Layout("$" + nameof(CrateName), ELayout.Title | ELayout.TitleOut)]
 #endif
         [SerializeField]
-        private ParameterData1 _parameter;
+        private ParameterData1 _parameter;*/
 
         [SerializeField] private ParameterIdProvider _parameterId;
 
@@ -28,9 +28,10 @@ namespace Parameters.Runtime.Common
 
         [Space(10f)] [SerializeField] private CalculationFormula _formula;
 
+/*
 #if UNITY_EDITOR
         private string CrateName => _parameter?.DebugName;
-#endif
+#endif*/
 
         public int Id => (int)_parameterId;
 
@@ -46,17 +47,17 @@ namespace Parameters.Runtime.Common
             get => _formula.Dependencies;
         }
 
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
         internal void PrepareFormula()
         {
             _formula.Prepare(_parameter);
         }
-#endif
+#endif*/
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameter CreateParameter(ComplexParameterContainer container)
         {
-            var instance = _parameter.CreateParameter(container, _formula.Descriptions, _formula.Dependencies);
+            var instance = new ComplexParameter((int)_parameterId, _formula.Descriptions, _formula.Dependencies, container);
 
             instance.AddFlat(_flatValue);
             instance.AddPercent(_percentValue);

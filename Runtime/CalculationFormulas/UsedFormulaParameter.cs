@@ -8,7 +8,7 @@ namespace Parameters.Runtime.CalculationFormulas
 {
 #if UNITY_EDITOR
     [Serializable]
-    public class CalculationFormulaElement
+    public class UsedFormulaParameter 
     {
         [SerializeField] private ParameterData1 _parameter;
         [SerializeField] private ParameterIdProvider _parameterIdProvider;

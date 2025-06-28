@@ -8,7 +8,7 @@ namespace Parameters.Runtime.Common
     internal static class ComplexParameterContainerStorage
     {
         internal static readonly Dictionary<int, FastList<ComplexParameterContainer>> Map = new();
-        internal static readonly FastList<ComplexParameterContainer> Dockers = new();
+        internal static readonly FastList<ComplexParameterContainer> Containers = new();
         internal static ComplexParameterContainer PlayerContainer;
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -17,7 +17,7 @@ namespace Parameters.Runtime.Common
             if (container.Holder == null)
                 return;
 
-            Dockers.Add(container);
+            Containers.Add(container);
             var holderId = container.Holder.GetInstanceID();
 
             if (Map.ContainsKey(holderId) == false)
@@ -34,7 +34,7 @@ namespace Parameters.Runtime.Common
                 throw new NullReferenceException();
 #endif
 
-            Dockers.Remove(container);
+            Containers.Remove(container);
             Map[container.Holder.GetInstanceID()].Remove(container);
         }
 

@@ -14,38 +14,77 @@ namespace Plugins.unity.parameters.Editor.Controls
     {
         private static readonly Color BackgroundColor = new(0.22f, 0.22f, 0.22f);
         private static readonly Color HoverColor = new(0.39f, 0.39f, 0.39f);
-        
+
+        private readonly Label _displayNameLabel;
+        private readonly VisualElement _root;
+
         private readonly VisualElement _expandRoot;
         private readonly Label _title;
+
+        private FloatField _flatValueField;
+        private FloatField _percentValueField;
+
+        private CalculationFormulaControl _formulaControl;
 
         private SerializedProperty _idProperty;
         private SerializedProperty _formula;
         private SerializedProperty _formulaDependencies;
+        private SerializedProperty _formulaUsages;
 
-        public ParameterBuilderCard(SerializedProperty property)
+        public ParameterBuilderCard(bool showDisplayName = true)
         {
-            _idProperty = property.FindPropertyRelative("_parameterId");
+            if (showDisplayName == true)
+            {
+                _displayNameLabel = new Label()
+                    .Margin(0f, 0f, 0f, 4f)
+                    .AddTo(this);
+            }
 
-            _title = new Label()
-                .FontSize(14f)
-                .Bold()
-                .AddTo(this);
-
-            this.Margin(2f)
-                .Padding(6f)
+            _root = new VisualElement()
+                .Margin(2f)
+                .Padding(4f)
                 .BorderWidth(2f)
                 .BorderRadius(8f)
-                .BorderColor(new Color(0.37f, 0.37f, 0.37f));
+                .BorderColor(new Color(0.37f, 0.37f, 0.37f))
+                .AddTo(this);
+
+            _title = new Label()
+                .FontSize(12.5f)
+                .FlexGrow(1f)
+                .Bold()
+                .AddTo(_root);
 
             SetupTitle();
 
-            _expandRoot = new VisualElement().MarginTop(16f).AddTo(this);
+            _expandRoot = new VisualElement().MarginTop(16f).AddTo(_root);
 
             BuildExpand(_expandRoot);
-            BuildSettingsFields(property).AddTo(_expandRoot);
-            BuildFormulaPart(property).AddTo(_expandRoot);
+            BuildSettingsFields().AddTo(_expandRoot);
+
+            BuildFormulaPart()
+                .MarginTop(16f)
+                .Padding(8f)
+                .BorderRadius(8f)
+                .AddTo(_expandRoot);
 
             _expandRoot.Display(DisplayStyle.None);
+        }
+
+        public ParameterBuilderCard Bind(SerializedProperty property)
+        {
+            if (_displayNameLabel != null)
+                _displayNameLabel.text = property.displayName;
+            
+            _idProperty = property.FindPropertyRelative("_parameterId");
+            _formula = property.FindPropertyRelative("_formula");
+
+            _flatValueField.Bind(property.FindPropertyRelative("_flatValue"));
+            _percentValueField.Bind(property.FindPropertyRelative("_percentValue"));
+
+            _title.DisplayParameterName(_idProperty);
+            _formulaControl.Bind(_idProperty, _formula);
+
+            return this;
         }
 
         private void SetupTitle()
@@ -54,12 +93,10 @@ namespace Plugins.unity.parameters.Editor.Controls
                 (_, self) => self._expandRoot.SwapDisplay(), this);
 
             _title.RegisterCallback<PointerEnterEvent, ParameterBuilderCard>(
-                (_, self) => self.BackgroundColor(HoverColor), this);
+                (_, self) => self._root.BackgroundColor(HoverColor), this);
 
             _title.RegisterCallback<PointerLeaveEvent, ParameterBuilderCard>(
-                (_, self) => self.BackgroundColor(BackgroundColor), this);
-
-            _title.DisplayParameterName(_idProperty);
+                (_, self) => self._root.BackgroundColor(BackgroundColor), this);
         }
 
         private void BuildExpand(VisualElement expandRoot)
@@ -78,84 +115,27 @@ namespace Plugins.unity.parameters.Editor.Controls
             prop.RegisterValueChangeCallback(evt => _title.DisplayParameterName(evt.changedProperty));
         }
 
-        private VisualElement BuildSettingsFields(SerializedProperty property)
+        private VisualElement BuildSettingsFields()
         {
             var root = new VisualElement()
                 .Margin(0f, 0f, 4f, 0f);
 
-            var flat = new FloatField("Flat:")
-                .Bind(property.FindPropertyRelative("_flatValue"))
+            _flatValueField = new FloatField("Flat:")
                 .AddTo(root);
 
-            var percent = new FloatField("Percent:")
-                .Bind(property.FindPropertyRelative("_percentValue"))
+            _percentValueField = new FloatField("Percent:")
                 .AddTo(root);
 
             return root;
         }
 
-        private VisualElement BuildFormulaPart(SerializedProperty property)
+        private VisualElement BuildFormulaPart()
         {
-            _formula = property.FindPropertyRelative("_formula");
-            _formulaDependencies = _formula.FindPropertyRelative("Dependencies");
-            
-            var root = new VisualElement()
-                .MarginTop(16f);
+            _formulaControl = new CalculationFormulaControl(true);
+            _formulaControl.Label.ColorChangeAnimation(_formulaControl, new Color(0.25f, 0.25f, 0.25f),
+                new Color(0.28f, 0.28f, 0.28f));
 
-            new Label("Formula")
-                .Margin(0f, 0f, 0f, 8f)
-                .FontSize(13f)
-                .Bold()
-                .BorderWidth(0f, 0f, 0f, 2f)
-                .BorderColor(new Color(0.37f, 0.37f, 0.37f))
-                .AddTo(root);
-
-            new PropertyField(_formula.FindPropertyRelative("_elements"))
-                .AddTo(root);
-
-            var inputField = new TextField()
-                .Bind(_formula.FindPropertyRelative("_formula"))
-                .AddTo(root);
-
-            inputField.multiline = true;
-
-            var dependenciesViewLabel = new Label("Dependencies")
-                .MarginTop(8f)
-                .FontSize(11f)
-                .Bold()
-                .AddTo(root);
-            
-            var dependenciesView = new ListView()
-                .HideSize()
-                .ReadOnly()
-                .Bind(_formulaDependencies)
-                .AddTo(root);
-            
-            dependenciesView.makeItem = () =>
-            {
-                var elRoot = new VisualElement();
-                new Label()
-                    .MarginTop(2f)
-                    .Padding(4f)
-                    .BackgroundColor(new Color(0.19f, 0.19f, 0.19f))
-                    .AddTo(elRoot);
-
-                return elRoot;
-            };
-            dependenciesView.bindItem = (label, index) =>
-            {
-                ((Label)label.Children().First()).text = _formulaDependencies.GetArrayElementAtIndex(index).intValue.ToString();
-            };
-            
-            var prepareButton = new Button()
-                .SetText("PrepareFormula")
-                .AddTo(root);
-
-            prepareButton.RegisterCallback<ClickEvent, ParameterBuilderCard>(
-                (_, self) => FormulaExtensions.Prepare(self._formula, _idProperty.FindPropertyRelative("_id").intValue),
-                this);
-
-            return root;
+            return _formulaControl;
         }
     }
 }

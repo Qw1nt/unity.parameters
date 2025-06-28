@@ -9,7 +9,6 @@ namespace Parameters.Editor.Windows
 {
     public class SearchParameterTypeWindow : ScriptableObject, ISearchWindowProvider
     {
-        private ParameterData1 _target;
         private Action<Type> _onSelectCallback;
 
         public void SetSelectCallback(Action<Type> onSelectCallback)

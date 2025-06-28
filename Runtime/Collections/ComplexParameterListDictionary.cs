@@ -136,12 +136,16 @@ public class ComplexParameterListDictionary
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            int i1 = Hash1(key);
+            var i1 = Hash1(key);
+            
             if (occupied[i1] == 1 && keys[i1] == key)
                 return values[i1];
-            int i2 = Hash2(key);
+            
+            var i2 = Hash2(key);
+            
             if (occupied[i2] == 1 && keys[i2] == key)
                 return values[i2];
+            
             throw new KeyNotFoundException($"Key {key} not found.");
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -15,13 +15,13 @@ namespace Parameters.Runtime.CalculationFormulas
     internal class CalculationFormula
     {
 #if UNITY_EDITOR
-        [SerializeField] private List<CalculationFormulaElement> _elements;
-        [ReadOnly] [SerializeField] private List<CalculationFormulaElement> _usages;
+        [SerializeField] private List<UsedFormulaParameter> _elements;
+        [SerializeField] private List<UsedFormulaParameter> _usages;
         [TextArea] [SerializeField] private string _formula;
 #endif
 
-        [ReadOnly] public FormulaElementDescription[] Descriptions;
-        [ReadOnly] public int[] Dependencies;
+        public FormulaElementDescription[] Descriptions;
+        public int[] Dependencies;
 
 #if UNITY_EDITOR
         public void Prepare(ParameterData1 required)

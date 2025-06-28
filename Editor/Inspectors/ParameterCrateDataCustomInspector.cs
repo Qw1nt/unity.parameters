@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Parameters.Editor.Inspectors
 {
+    [Obsolete]
     [CustomEditor(typeof(ParameterData1))]
     public class ParameterCrateDataCustomInspector : UnityEditor.Editor
     {
