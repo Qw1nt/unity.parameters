@@ -115,6 +115,11 @@ namespace Parameters.Editor.Controls
             _nameLabel.text = info.GetInitializerName();
 
             _idPropertyField.BindProperty(info.Id);
+            _idPropertyField.TrackPropertyValue(info.Id, _ =>
+            {
+                DatabaseUtils.instance.UpdateIds();
+            });
+            
             _friendlyName.BindProperty(info.FriendlyName);
         }
 

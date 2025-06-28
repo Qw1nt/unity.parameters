@@ -54,12 +54,14 @@ namespace Parameters.Editor.Common
 
         private void UpdateDatabaseValues()
         { 
+            Debug.Log("Update value");
+            
             var allInitializers = TypeCache.GetTypesWithAttribute<ParameterInitSelfAttribute>();
             var alphabetSorted = allInitializers.OrderBy(x => x.Name).ToList();
 
             _processedInitializers.Clear();
             _serializeSetupInfos.Clear();
-            _serializeSetupInfoMap.Clear();
+            _serializeSetupInfoMap.Clear(); 
 
             for (int i = 0; i < _databaseValues.arraySize; i++)
             {
@@ -91,6 +93,13 @@ namespace Parameters.Editor.Common
                 _databaseValues.InsertArrayElementAtIndex(i);
                 var element = _databaseValues.GetArrayElementAtIndex(i);
 
+                var id = element.FindPropertyRelative("_id");
+                id.FindPropertyRelative("_hash").intValue = 0;
+                id.FindPropertyRelative("_id").stringValue = string.Empty;
+                id.FindPropertyRelative("_editorFullName").stringValue = string.Empty;
+
+                element.FindPropertyRelative("_friendlyName").stringValue = string.Empty;
+                
                 var initializer = element.FindPropertyRelative("Initializer");
                 initializer.managedReferenceValue = Activator.CreateInstance(initializerType);
 
@@ -109,6 +118,11 @@ namespace Parameters.Editor.Common
             }
 
             instance.SerializedDatabase.ApplyModifiedProperties();
+        }
+
+        internal void UpdateIds()
+        {
+            UpdateDatabaseValues();
         }
 
         public IReadOnlyList<ParameterSetupSerializeInfo> GetInfos()
