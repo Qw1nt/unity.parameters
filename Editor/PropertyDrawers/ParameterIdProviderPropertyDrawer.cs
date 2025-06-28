@@ -6,7 +6,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Plugins.unity.parameters.Editor.PropertyDrawers
+namespace Parameters.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(ParameterIdProvider))]
     internal class ParameterIdProviderPropertyDrawer : PropertyDrawer

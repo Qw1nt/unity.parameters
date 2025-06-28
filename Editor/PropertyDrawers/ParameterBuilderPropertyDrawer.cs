@@ -1,9 +1,9 @@
-﻿using Parameters.Runtime.Common;
-using Plugins.unity.parameters.Editor.Controls;
+﻿using Parameters.Editor.Controls;
+using Parameters.Runtime.Common;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace Parameters.Editor.Inspectors
+namespace Parameters.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(ParameterBuilder))]
     internal class ParameterBuilderPropertyDrawer : PropertyDrawer

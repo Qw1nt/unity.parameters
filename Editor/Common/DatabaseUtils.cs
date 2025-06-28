@@ -53,7 +53,7 @@ namespace Parameters.Editor.Common
         }
 
         private void UpdateDatabaseValues()
-        {
+        { 
             var allInitializers = TypeCache.GetTypesWithAttribute<ParameterInitSelfAttribute>();
             var alphabetSorted = allInitializers.OrderBy(x => x.Name).ToList();
 
@@ -67,7 +67,11 @@ namespace Parameters.Editor.Common
                 var initializer = arrayElement.FindPropertyRelative("Initializer").managedReferenceValue;
 
                 if (initializer == null)
+                {
+                    _databaseValues.DeleteArrayElementAtIndex(i);
+                    i--;
                     continue;
+                } 
 
                 var initializerType = initializer.GetType();
 
@@ -103,6 +107,8 @@ namespace Parameters.Editor.Common
                 if (idHash.intValue != 0)
                     _serializeSetupInfoMap.Add(idHash.intValue, obj);
             }
+
+            instance.SerializedDatabase.ApplyModifiedProperties();
         }
 
         public IReadOnlyList<ParameterSetupSerializeInfo> GetInfos()

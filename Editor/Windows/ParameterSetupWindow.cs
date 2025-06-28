@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Parameters.Editor.Common;
+using Parameters.Editor.Controls;
 using Parameters.Editor.Extensions;
-using Parameters.Runtime.Attributes;
-using Parameters.Runtime.Common;
-using Plugins.unity.parameters.Editor.Controls;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 namespace Parameters.Editor.Windows

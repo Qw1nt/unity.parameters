@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Plugins.unity.parameters.Editor.Controls
+namespace Parameters.Editor.Controls
 {
     public class UsedParametersInFormulaExpandableList : ReadOnlyExpandableList
     {

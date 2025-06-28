@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Parameters.Editor.Controls;
 using Parameters.Runtime.Common;
-using Plugins.unity.parameters.Editor.Controls;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Plugins.unity.parameters.Editor.PropertyDrawers
+namespace Parameters.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(ComplexParameterContainerBuilder))]
     internal class ComplexParameterContainerBuilderPropertyDrawer : PropertyDrawer

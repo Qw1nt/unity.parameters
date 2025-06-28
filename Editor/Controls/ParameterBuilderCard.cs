@@ -8,7 +8,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Plugins.unity.parameters.Editor.Controls
+namespace Parameters.Editor.Controls
 {
     public class ParameterBuilderCard : VisualElement
     {

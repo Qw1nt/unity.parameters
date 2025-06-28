@@ -1,14 +1,11 @@
-﻿using System.Linq;
-using Parameters.Editor.Common;
+﻿using Parameters.Editor.Common;
 using Parameters.Editor.Extensions;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
 
-namespace Plugins.unity.parameters.Editor.Controls
+namespace Parameters.Editor.Controls
 {
     public class CalculationFormulaControl : VisualElement
     {

@@ -1,9 +1,9 @@
-﻿using Parameters.Runtime.CalculationFormulas;
-using Plugins.unity.parameters.Editor.Controls;
+﻿using Parameters.Editor.Controls;
+using Parameters.Runtime.CalculationFormulas;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace Plugins.unity.parameters.Editor.PropertyDrawers
+namespace Parameters.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(FormulaElementDescription))]
     internal class FormulaElementDescriptionPropertyDrawer : PropertyDrawer
