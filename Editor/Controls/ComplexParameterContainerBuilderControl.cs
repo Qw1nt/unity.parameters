@@ -2,6 +2,7 @@
 using Parameters.Editor.Common;
 using Parameters.Editor.Extensions;
 using Parameters.Editor.Windows;
+using Plugins.unity.parameters.Editor.Base;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -9,24 +10,41 @@ using UnityEngine.UIElements;
 
 namespace Parameters.Editor.Controls
 {
-    public class ComplexParameterContainerBuilderControl : VisualElement
+    public class ComplexParameterContainerBuilderControl : ExpandableLazyInitElement
     {
         private readonly Label _propertyNameLabel;
-        private readonly ListView _listView;
         private readonly VisualElement _expandableRoot;
+        private ListView _listView;
 
         private SerializedProperty _parameters;
 
         private static StyleSheet _listStyle;
-
+        
         public ComplexParameterContainerBuilderControl(bool showPropertyNameLabel = true)
         {
+            this.MarginTop(4f)
+                .BorderRadius(8f)
+                .Padding(2f)
+                .BackgroundColor(new Color(0.2f, 0.2f, 0.2f));
+            
             _propertyNameLabel = new Label()
+                .FontSize(14f)
+                .Padding(6f)
                 .AddTo(this);
+
+            _propertyNameLabel.RegisterCallback<ClickEvent, ComplexParameterContainerBuilderControl>((evt, self) =>
+            {
+                self.SwitchExpandState();
+            }, this);
 
             _expandableRoot = new VisualElement()
                 .AddTo(this);
+        }
+        
+        protected override VisualElement ExpandElementsContainer => _expandableRoot;
 
+        protected override void Initialize()
+        {
             _listView = new ListView()
                 .HideSizeCounter()
                 .SelectionType(SelectionType.None)
@@ -42,13 +60,15 @@ namespace Parameters.Editor.Controls
             _listView.allowRemove = false;
             _listView.styleSheets.Add(_listStyle);
 
+            _listView.Bind(_parameters);
+
             var addElementButton = new Button()
                 .SetText("+")
                 .FontSize(14)
                 .JustifyContent(Justify.Center)
                 .FlexGrow(1)
                 .FlexDirection(FlexDirection.Row)
-                .AddTo(this);
+                .AddTo(_expandableRoot);
 
             addElementButton.clicked += ShowTypesWindow;
         }
@@ -58,8 +78,6 @@ namespace Parameters.Editor.Controls
             _propertyNameLabel.text = property.displayName;
 
             _parameters = property.FindPropertyRelative("_parameters");
-            _listView.Bind(_parameters);
-
             return this;
         }
 
@@ -80,7 +98,7 @@ namespace Parameters.Editor.Controls
 
             SearchWindow.Open(new SearchWindowContext(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)), window);
         }
-
+        
         private class ListViewItem : VisualElement
         {
             private SerializedProperty _parameters;

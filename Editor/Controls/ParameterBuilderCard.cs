@@ -1,16 +1,13 @@
-﻿using System.Linq;
-using Parameters.Editor.Common;
-using Parameters.Editor.Extensions;
-using Parameters.Editor.Windows;
+﻿using Parameters.Editor.Extensions;
+using Plugins.unity.parameters.Editor.Base;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Parameters.Editor.Controls
 {
-    public class ParameterBuilderCard : VisualElement
+    public class ParameterBuilderCard : ExpandableLazyInitElement
     {
         private static readonly Color BackgroundColor = new(0.22f, 0.22f, 0.22f);
         private static readonly Color HoverColor = new(0.39f, 0.39f, 0.39f);
@@ -30,6 +27,8 @@ namespace Parameters.Editor.Controls
         private SerializedProperty _formula;
         private SerializedProperty _formulaDependencies;
         private SerializedProperty _formulaUsages;
+
+        private SerializedProperty _sourceBindProperty;
 
         public ParameterBuilderCard(bool showDisplayName = true)
         {
@@ -57,7 +56,26 @@ namespace Parameters.Editor.Controls
             SetupTitle();
 
             _expandRoot = new VisualElement().MarginTop(16f).AddTo(_root);
+            _expandRoot.Display(DisplayStyle.None);
+        }
 
+        protected override VisualElement ExpandElementsContainer => _expandRoot;
+
+        public ParameterBuilderCard Bind(SerializedProperty property)
+        {
+            _sourceBindProperty = property;
+            _idProperty = property.FindPropertyRelative("_parameterId");
+            _formula = property.FindPropertyRelative("_formula");
+
+            if (_displayNameLabel != null)
+                _displayNameLabel.text = property.displayName;
+
+            _title.DisplayParameterName(_idProperty);
+            return this;
+        }
+        
+        protected override void Initialize()
+        {
             BuildExpand(_expandRoot);
             BuildSettingsFields().AddTo(_expandRoot);
 
@@ -67,30 +85,16 @@ namespace Parameters.Editor.Controls
                 .BorderRadius(8f)
                 .AddTo(_expandRoot);
 
-            _expandRoot.Display(DisplayStyle.None);
-        }
+            _flatValueField.Bind(_sourceBindProperty.FindPropertyRelative("_flatValue"));
+            _percentValueField.Bind(_sourceBindProperty.FindPropertyRelative("_percentValue"));
 
-        public ParameterBuilderCard Bind(SerializedProperty property)
-        {
-            if (_displayNameLabel != null)
-                _displayNameLabel.text = property.displayName;
-            
-            _idProperty = property.FindPropertyRelative("_parameterId");
-            _formula = property.FindPropertyRelative("_formula");
-
-            _flatValueField.Bind(property.FindPropertyRelative("_flatValue"));
-            _percentValueField.Bind(property.FindPropertyRelative("_percentValue"));
-
-            _title.DisplayParameterName(_idProperty);
             _formulaControl.Bind(_idProperty, _formula);
-
-            return this;
         }
 
         private void SetupTitle()
         {
             _title.RegisterCallback<ClickEvent, ParameterBuilderCard>(
-                (_, self) => self._expandRoot.SwapDisplay(), this);
+                (_, self) => self.SwitchExpandState(), this);
 
             _title.RegisterCallback<PointerEnterEvent, ParameterBuilderCard>(
                 (_, self) => self._root.BackgroundColor(HoverColor), this);
@@ -132,6 +136,7 @@ namespace Parameters.Editor.Controls
         private VisualElement BuildFormulaPart()
         {
             _formulaControl = new CalculationFormulaControl(true);
+            
             _formulaControl.Label.ColorChangeAnimation(_formulaControl, new Color(0.25f, 0.25f, 0.25f),
                 new Color(0.28f, 0.28f, 0.28f));
 

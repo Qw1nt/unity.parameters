@@ -22,7 +22,6 @@ namespace Parameters.Editor.Extensions
             
             if (string.IsNullOrEmpty(formula) == true)
             {
-                elements.ClearArray();
                 usages.ClearArray();
                 descriptions.ClearArray();
                 dependencies.ClearArray();

@@ -54,8 +54,6 @@ namespace Parameters.Editor.Common
 
         private void UpdateDatabaseValues()
         { 
-            Debug.Log("Update value");
-            
             var allInitializers = TypeCache.GetTypesWithAttribute<ParameterInitSelfAttribute>();
             var alphabetSorted = allInitializers.OrderBy(x => x.Name).ToList();
 

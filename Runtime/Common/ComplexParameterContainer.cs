@@ -8,7 +8,6 @@ namespace Parameters.Runtime.Common
     public class ComplexParameterContainer : IParameterContainer
     {
         public readonly IParameterContainerHolder Holder;
-        public readonly ComplexParameterContainer Parent;
         
         private readonly ComplexParameterDictionary _map = new(8);
         private readonly ComplexParameterListDictionary _dependenciesMap = new(4); // parameter -> dependents 
@@ -20,11 +19,13 @@ namespace Parameters.Runtime.Common
         
         public readonly FastList<ComplexParameterContainer> Children = new();
 
+        private ComplexParameterContainer _parent;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameterContainer(IParameterContainerHolder holder, IReadOnlyList<IParameterFactory> parameters, ComplexParameterContainer parent = null)
         {
             Holder = holder;
-            Parent = parent;
+            _parent = parent;
             Parameters = new FastList<ComplexParameter>(parameters.Count);
             CalculationBuffer = new IntHashSet(parameters.Count);
 
@@ -56,22 +57,34 @@ namespace Parameters.Runtime.Common
             if (Holder != null)
                 ComplexParameterContainerStorage.Add(this);
 
-            if (Parent == null)
+            if (_parent == null)
                 return;
 
-            Parent.AddChild(this);
+            _parent.AddChild(this);
         }
 
+        public ComplexParameterContainer Parent
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _parent;
+        }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddChild(ComplexParameterContainer child)
+        public void AddChild(ComplexParameterContainer child)
         {
-            _childQueue.Clear();
+            child._parent = this;
+            Children.Add(child);
+
+            //TODO: Мб не работает с:
+            
+            /*_childQueue.Clear();
             _childQueue.Enqueue(child);
 
             while (_childQueue.Count > 0)
             {
                 var element = _childQueue.Dequeue();
+                element._parent = this;
+
                 _childBuffer.Add(element);
 
                 foreach (var elementChild in element.Children)
@@ -79,28 +92,33 @@ namespace Parameters.Runtime.Common
             }
 
             AddChild(_childBuffer);
-            _childBuffer.Clear();
+            _childBuffer.Clear();*/
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddChild(FastList<ComplexParameterContainer> children)
         {
             Children.AddRange(children);
-            Parent?.AddChild(children);
+            _parent?.AddChild(children);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RemoveChild(ComplexParameterContainer child)
+        public void RemoveChild(ComplexParameterContainer child)
         {
-            var children = child.Children;
             Children.Remove(child);
-            
+            child._parent = null;
+
+            //TODO: Мб не работает с:
+
+            /*var children = child.Children;
+            Children.Remove(child);
+
             var length = children.length;
 
             for (int i = 0; i < length; i++)
                 Children.Remove(children.data[i]);
-            
-            Parent?.RemoveChild(child);
+
+            _parent?.RemoveChild(child);*/
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,8 +151,8 @@ namespace Parameters.Runtime.Common
             if (Has(parameterId) == true)
                 return _map[parameterId];
 
-            if (Parent != null && Parent.Has(parameterId) == true)
-                return Parent._map[parameterId];
+            if (_parent != null && _parent.Has(parameterId) == true)
+                return _parent._map[parameterId];
 
 #if UNITY_EDITOR
             throw new KeyNotFoundException($"Параметр с id {parameterId} не найден");
@@ -148,8 +166,8 @@ namespace Parameters.Runtime.Common
             if (Has(parameterId) == true)
                 return _map[parameterId];
 
-            if (Parent != null && Parent.Has(parameterId) == true)
-                return Parent._map[parameterId];
+            if (_parent != null && _parent.Has(parameterId) == true)
+                return _parent._map[parameterId];
 
             return default;
         }
@@ -168,16 +186,16 @@ namespace Parameters.Runtime.Common
             if (onlyInSelf == true)
                 return false;
             
-            if (Parent == null || Parent.Has(id) == false)
+            if (_parent == null || _parent.Has(id) == false)
                 return false;
 
-            result = Parent._map[id];
+            result = _parent._map[id];
             return true;
         }
 
         public void Dispose()
         {
-            Parent?.RemoveChild(this);
+            _parent?.RemoveChild(this);
             ComplexParameterContainerStorage.Remove(this);
         }
 

@@ -11,6 +11,12 @@ namespace Parameters.Runtime.Common
         [SerializeField] private ParameterBuilder[] _parameters;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<ParameterBuilder> GetParameters()
+        {
+            return _parameters;
+        } 
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameterContainer Create(IParameterContainerHolder holder, ComplexParameterContainer parent = null)
         {
             return new ComplexParameterContainer(holder, _parameters, parent);

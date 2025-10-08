@@ -1,5 +1,6 @@
 ﻿using Parameters.Editor.Common;
 using Parameters.Editor.Extensions;
+using Plugins.unity.parameters.Editor.Base;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,7 +8,7 @@ using Button = UnityEngine.UIElements.Button;
 
 namespace Parameters.Editor.Controls
 {
-    public class CalculationFormulaControl : VisualElement
+    public class CalculationFormulaControl : ExpandableLazyInitElement
     {
         private TextField _formulaInputField;
         private UsedParametersInFormulaExpandableList _usedParametersListView;
@@ -26,33 +27,42 @@ namespace Parameters.Editor.Controls
         private readonly VisualElement _expandRoot;
 
         public readonly Label Label;
-        
+
         public CalculationFormulaControl(bool showPrepareButton)
         {
             Label = new Label("Formula")
                 .FontSize(13f)
                 .Bold()
                 .BorderWidth(0f, 0f, 0f, 2f)
-                .BorderColor(new Color(0.37f, 0.37f, 0.37f))
+                .BorderColor(new Color(0.39f, 0.39f, 0.39f))
                 .AddTo(this);
 
-            Label.RegisterCallback<ClickEvent, CalculationFormulaControl>((_, self) =>
-            {
-                self._expandRoot.SwapDisplay();
-            }, this);
-            
+            Label.RegisterCallback<ClickEvent, CalculationFormulaControl>((_, self) => { self.SwitchExpandState(); },
+                this);
+
             _expandRoot = new VisualElement()
                 .Display(DisplayStyle.None)
                 .AddTo(this);
-            
+        }
+
+        protected override VisualElement ExpandElementsContainer => _expandRoot;
+
+        protected override void Initialize()
+        {
             _formulaInputField = new TextField()
                 .Margin(0f, 0f, 8f, 0f)
                 .AddTo(_expandRoot);
-            
+
             _formulaInputField.multiline = true;
+            _formulaInputField.RegisterCallback<FocusOutEvent, CalculationFormulaControl>(
+                (evt, self) =>
+                {
+                    EditorFormulaParser.Prepare(self._formula, self._idProperty.FindPropertyRelative("_id").intValue);
+                },
+                this);
 
             CreateUsedParametersListView(_expandRoot);
-            
+
             CreateUsagesListView(_expandRoot);
             CreateDependenciesListView(_expandRoot);
             CreateDescriptionsListView(_expandRoot);
@@ -66,17 +76,6 @@ namespace Parameters.Editor.Controls
                 (_, self) =>
                     EditorFormulaParser.Prepare(self._formula, self._idProperty.FindPropertyRelative("_id").intValue),
                 this);
-        }
-
-        public CalculationFormulaControl Bind(SerializedProperty idProperty, SerializedProperty formulaProperty)
-        {
-            _idProperty = idProperty;
-            _formula = formulaProperty;
-            
-            _formulaUsedParameters = _formula.FindPropertyRelative("_elements");
-            _formulaDependencies = _formula.FindPropertyRelative("Dependencies");
-            _formulaUsages = _formula.FindPropertyRelative("_usages");
-            _formulaDescription = _formula.FindPropertyRelative("Descriptions");
 
             _formulaInputField.Bind(_formula.FindPropertyRelative("_formula"));
 
@@ -84,10 +83,21 @@ namespace Parameters.Editor.Controls
             _formulaUsagesListView.Bind(_formulaUsages);
             _dependenciesListView.Bind(_formulaDependencies);
             _descriptionsListView.Bind(_formulaDescription);
-            
+        }
+
+        public CalculationFormulaControl Bind(SerializedProperty idProperty, SerializedProperty formulaProperty)
+        {
+            _idProperty = idProperty;
+            _formula = formulaProperty;
+
+            _formulaUsedParameters = _formula.FindPropertyRelative("_elements");
+            _formulaDependencies = _formula.FindPropertyRelative("Dependencies");
+            _formulaUsages = _formula.FindPropertyRelative("_usages");
+            _formulaDescription = _formula.FindPropertyRelative("Descriptions");
+
             return this;
         }
-        
+
         private void CreateUsedParametersListView(VisualElement root)
         {
             _usedParametersListView = new UsedParametersInFormulaExpandableList("Used parameters")
@@ -97,12 +107,13 @@ namespace Parameters.Editor.Controls
             _usedParametersListView.AddButton.RegisterCallback<ClickEvent, CalculationFormulaControl>((_, self) =>
             {
                 self._formulaUsedParameters.InsertArrayElementAtIndex(self._formulaUsedParameters.arraySize);
-                var newItem = self._formulaUsedParameters.GetArrayElementAtIndex(self._formulaUsedParameters.arraySize - 1);
+                var newItem =
+                    self._formulaUsedParameters.GetArrayElementAtIndex(self._formulaUsedParameters.arraySize - 1);
                 newItem.FindPropertyRelative("_parameterIdProvider").FindPropertyRelative("_id").intValue = 0;
                 newItem.FindPropertyRelative("_shortName").stringValue = string.Empty;
                 self._formulaUsedParameters.serializedObject.ApplyModifiedProperties();
             }, this);
-            
+
             _usedParametersListView.ListView.Editable();
             _usedParametersListView.ListView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             _usedParametersListView.ListView.makeItem = () =>
@@ -117,7 +128,7 @@ namespace Parameters.Editor.Controls
                     .BorderRadius(8f)
                     .BackgroundColor(new Color(0.34f, 0.34f, 0.34f))
                     .AddTo(parentElement);
-                
+
                 new UsedFormulaParameterControl()
                     .FlexGrow(1f)
                     .Margin(0f, 4f, 0f, 0f)
@@ -126,15 +137,16 @@ namespace Parameters.Editor.Controls
                 EditorUIElementFactory
                     .CreateDeleteButton()
                     .AddTo(container);
-                
+
                 return parentElement;
             };
+
             _usedParametersListView.ListView.bindItem = (visualElement, index) =>
             {
                 visualElement
-                    .Q<UsedFormulaParameterControl>() 
+                    .Q<UsedFormulaParameterControl>()
                     .Bind(_formulaUsedParameters.GetArrayElementAtIndex(index));
-                
+
                 visualElement
                     .Q<Button>("delete-button")
                     .RegisterCallback<ClickEvent, (SerializedProperty prop, int i)>((_, tuple) =>

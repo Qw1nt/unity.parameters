@@ -71,7 +71,7 @@ namespace Parameters.Editor.Controls
             _simpleValues
                 .SetProperty(property)
                 .BindLeft(nameof(FormulaElementDescription.SimpleLeft))
-                .BindRight(nameof(FormulaElementDescription.SimpleLeft));
+                .BindRight(nameof(FormulaElementDescription.SimpleRight));
             
             _operationType.Bind(property.FindPropertyRelative("OperationType"));
         }

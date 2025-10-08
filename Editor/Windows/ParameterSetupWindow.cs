@@ -100,28 +100,6 @@ namespace Parameters.Editor.Windows
                    first.IndexOf(second, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        /*private bool TryLoadDatabase()
-        {
-            var databases = AssetDatabase.FindAssets($"t:{nameof(ParameterDatabase)}");
-
-            switch (databases.Length)
-            {
-                case 0:
-                    Debug.LogError("No ");
-                    return false;
-
-                case > 1:
-                    Debug.LogError("More ");
-                    return false;
-            }
-
-            var path = AssetDatabase.GUIDToAssetPath(databases[0]);
-            _database = AssetDatabase.LoadAssetAtPath<ParameterDatabase>(path);
-            _serializedDatabase = new SerializedObject(_database);
-
-            return true;
-        }*/
-
         private VisualElement MakeListItem()
         {
             return new ParameterSetupWindowListItem();
