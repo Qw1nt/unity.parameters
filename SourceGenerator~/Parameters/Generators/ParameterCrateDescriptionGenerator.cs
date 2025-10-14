@@ -79,14 +79,20 @@ public class ParameterCrateDescriptionGenerator : IIncrementalGenerator
                                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                  public {{generatedType}} GetValue()
                                  {
-                                    return ({{generatedType}})(Ref.GetFlat() * Ref.GetPercent());
+                                    return ({{generatedType}})(Ref.CalculatedFlat.ParentModifiedValue * Ref.CalculatedPercent.ParentModifiedValue);
                                  }
                                  
                                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
                                  public {{generatedType}} GetCleanValue()
                                  {
-                                    return ({{generatedType}})Ref.GetFlat();
+                                    return ({{generatedType}})Ref.CalculatedFlat.CleanValue;
                                  }   
+                                 
+                                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                                 public static int GetStaticId()
+                                 {
+                                    return StaticId.Value;
+                                 }
                              }
                              
                              [ParameterInitSelf("{{typeName}}"), Serializable]

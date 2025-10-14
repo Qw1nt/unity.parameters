@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Parameters.Runtime.Interfaces;
-using TriInspector;
 using UnityEngine;
 
 namespace Parameters.Runtime.Common
@@ -11,15 +10,12 @@ namespace Parameters.Runtime.Common
     {
         [SerializeField] private ParameterBuilder[] _parameters;
 
-#if UNITY_EDITOR
-        [Button]
-        private void Prepare()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<ParameterBuilder> GetParameters()
         {
-            foreach (var parameter in _parameters)
-                parameter.PrepareFormula();
-        }
-#endif
-
+            return _parameters;
+        } 
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameterContainer Create(IParameterContainerHolder holder, ComplexParameterContainer parent = null)
         {

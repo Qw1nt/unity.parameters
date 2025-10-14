@@ -5,9 +5,7 @@ using System.Linq;
 using Parameters.Runtime.Base;
 using Parameters.Runtime.Common;
 using Parameters.Runtime.Extensions;
-using TriInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.CalculationFormulas
 {
@@ -15,17 +13,16 @@ namespace Parameters.Runtime.CalculationFormulas
     internal class CalculationFormula
     {
 #if UNITY_EDITOR
-        [SerializeField] private List<CalculationFormulaElement> _elements;
-        [ReadOnly] [SerializeField] private List<CalculationFormulaElement> _usages;
+        [SerializeField] private List<UsedFormulaParameter> _elements;
+        [SerializeField] private List<UsedFormulaParameter> _usages;
         [TextArea] [SerializeField] private string _formula;
 #endif
 
-        [ReadOnly] public FormulaElementDescription[] Descriptions;
-        [ReadOnly] public int[] Dependencies;
+        public FormulaElementDescription[] Descriptions;
+        public int[] Dependencies;
 
 #if UNITY_EDITOR
-
-        public void Prepare(ParameterData required)
+        public void Prepare(ParameterData1 required)
         {
             if (string.IsNullOrEmpty(_formula) == true)
             {
@@ -44,7 +41,7 @@ namespace Parameters.Runtime.CalculationFormulas
             Dependencies = _elements.Select(x => x.ParameterData.Id).ToArray();
             _usages = ParameterBuilderUsagesFactory.instance.Build(required, _elements);
             
-            var elementsMap = _elements.ToDictionary(x => x.ShortName, x => x.ParameterData.Id);
+            var elementsMap = _usages.ToDictionary(x => x.ShortName, x => x.ParameterData.Id);
             var result = new List<HashedFormulaElement>();
 
             var pointer = 0;
@@ -69,8 +66,7 @@ namespace Parameters.Runtime.CalculationFormulas
                 item.AdjustElementHash();
                 result.Add(item);
 
-                if (float.TryParse(item.Expression, NumberStyles.Float, CultureInfo.InvariantCulture,
-                        out var simpleValue) == true)
+                if (float.TryParse(item.Expression, NumberStyles.Float, CultureInfo.InvariantCulture, out var simpleValue) == true)
                     item.SimpleValue = simpleValue;
                 else if (elementsMap.TryGetValue(item.Expression, out var parameterId) == true)
                     item.ParameterId = parameterId;

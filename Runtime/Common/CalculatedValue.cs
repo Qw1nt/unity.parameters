@@ -16,9 +16,10 @@ namespace Parameters.Runtime.Common
             ParentModifiedValue = cleanValue;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetHashCode(CalculatedValue obj)
         {
-            return obj.CleanValue.GetHashCode() ^ obj.ParentModifiedValue.GetHashCode();
+            return obj.CleanValue.GetHashCode() * obj.ParentModifiedValue.GetHashCode();
         }
     }
 }

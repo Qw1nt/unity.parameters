@@ -5,7 +5,7 @@ using Parameters.Runtime.CalculationFormulas;
 
 namespace Parameters.Runtime.Extensions
 {
-    internal static class FormulaExtensions
+    public static class FormulaExtensions
     {
         private const ulong Offset = 777_777_777_777_777_777UL;
 

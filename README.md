@@ -9,7 +9,6 @@
 ## Зависимости
 
 - [Qw1nt.SelfId](https://github.com/Qw1nt/unity.self-id)
-- [TriInspector](https://github.com/codewriter-packages/Tri-Inspector)
 
 ## Установка
 
@@ -17,17 +16,17 @@
 
 ## Основное
 
-1) Одно хранилище для всех параметров объекта - `Docker`,
+1) Одно хранилище для всех параметров объекта - `ComplexParameterContainer`,
 2) Каждый параметр имеет набор значений, из которых происходит его расчёт,
-3) Каждый `Docker` может иметь один родительский `Docker` и множество дочерних,
-4) Данные родительского `Docker` влияют на расчёт дочерних,
-5) Параметры поддерживают формулы расчёта, уникальные для каждого `Docker`
+3) У `ComplexParameterContainer` может быть родитель и дочерние контейнеры,
+4) Данные родительского `ComplexParameterContainer` влияют на расчёт дочерних,
+5) Поддерживаются формулы расчёта, уникальные для каждого `ComplexParameterContainer`
 
 ## Параметр
 
-У каждого параметра есть 2 значения - `overall` и `value`, `overall` - %, на который умножается `value`. 
+У каждого параметра есть 2 значения - `percent` и `flat`, `percent` - %, на который умножается `flat`.
 
-Например, если у `MovementSpeed` `value` = 10, а `overall` = 0.5(50%), то `MovementSpeed.GetValue()` вернёт 5.
+Например, если у `MovementSpeed` `value` = 10, а `percent` = 0.5(50%), то `MovementSpeed.GetValue()` вернёт 5.
 
 
 ### Создание 

@@ -13,7 +13,7 @@ namespace Parameters.Runtime.Formatters
             return Math.Round(value, 3);
         }
 
-        public override double GetFormattedValue(ComplexParameterContainer container, ParameterData data)
+        public override double GetFormattedValue(ComplexParameterContainer container, ParameterData1 data)
         {
             return Math.Round(container.Get(data.Id).GetFlat(), 3);
         }

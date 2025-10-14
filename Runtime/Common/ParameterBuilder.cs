@@ -1,54 +1,41 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Parameters.Runtime.Base;
 using Parameters.Runtime.CalculationFormulas;
 using Parameters.Runtime.Interfaces;
-using TriInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Parameters.Runtime.Common
 {
     [Serializable]
     public class ParameterBuilder : IParameterFactory
     {
-#if UNITY_EDITOR
-        [Title("$" + nameof(CrateName))]
-#endif
-        [SerializeField] private ParameterData _parameter;
-        [InfoBox("Reserved name for use in formula - value")]
+        [SerializeField] private ParameterIdProvider _parameterId;
 
-        [Space] [SerializeField] private bool _withDefaultValue;
-        [SerializeField, ShowIf(nameof(_withDefaultValue)), Indent] private float _flatValue;
+        [SerializeField] private float _flatValue;
         [SerializeField] private float _percentValue = 1f;
 
-        [PropertySpace(10f)] [SerializeField] private CalculationFormula _formula;
+        [Space(10f)] [SerializeField] private CalculationFormula _formula;
 
-#if UNITY_EDITOR
-        private string CrateName => _parameter?.DebugName;
-#endif
+        public int Id => (int)_parameterId;
 
-        public int Id => _parameter.Id;
-
-        [ReadOnly] public FormulaElementDescription[] Formula => _formula.Descriptions;
-
-        [ReadOnly] public int[] Dependencies => _formula.Dependencies;
-
-#if UNITY_EDITOR
-        internal void PrepareFormula()
+        public FormulaElementDescription[] Formula
         {
-            _formula.Prepare(_parameter);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _formula.Descriptions;
         }
-#endif
+
+        public int[] Dependencies
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _formula.Dependencies;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ComplexParameter CreateParameter(ComplexParameterContainer container)
         {
-            var instance = _parameter.CreateParameter(container, _formula.Descriptions, _formula.Dependencies);
+            var instance = new ComplexParameter((int)_parameterId, _formula.Descriptions, _formula.Dependencies, container);
 
-            if (_withDefaultValue == true)
-                instance.AddFlat(_flatValue);
-
+            instance.AddFlat(_flatValue);
             instance.AddPercent(_percentValue);
 
             return instance;

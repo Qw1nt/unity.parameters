@@ -40,7 +40,7 @@ namespace Parameters.Runtime.Extensions
         private static void TryInitSubscribers(ComplexParameter complexParameter)
         {
             if (complexParameter.Subscribers == null)
-                complexParameter.Subscribers = new SwapList<CrateUpdateSubscriberBase>(1);
+                complexParameter.Subscribers = new FastList<CrateUpdateSubscriberBase>(1);
         }
     }
 }

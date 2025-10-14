@@ -6,9 +6,9 @@ namespace Parameters.Runtime
 {
     public static class ParametersCratesStorage
     {
-        private static readonly Dictionary<int, ParameterData> Storage = new();
+        private static readonly Dictionary<int, ParameterData1> Storage = new();
 
-        public static void InitData(IList<ParameterData> items)
+        public static void InitData(IList<ParameterData1> items)
         {
             Storage.Clear();
 
@@ -16,7 +16,7 @@ namespace Parameters.Runtime
                 Storage.Add(item.Id, item);
         }
 
-        public static ParameterData Get(int id)
+        public static ParameterData1 Get(int id)
         {
 #if UNITY_EDITOR
             if (Storage.ContainsKey(id) == false)
